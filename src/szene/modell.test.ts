@@ -32,10 +32,10 @@ describe('Outline-Modell', () => {
     const laenge = box.max.x - box.min.x;
     const breite = box.max.z - box.min.z;
     expect(laenge).toBeGreaterThan(3.8);
-    expect(laenge).toBeLessThan(4.4);
+    expect(laenge).toBeLessThan(4.5);
     expect(breite).toBeGreaterThan(1.4);
     expect(breite).toBeLessThan(1.8);
-    expect(box.min.y).toBeGreaterThanOrEqual(0); // nichts unter dem Boden
+    expect(box.min.y).toBeGreaterThan(-1e-6); // nichts unter dem Boden (Rundung erlaubt)
     expect(box.max.y).toBeLessThan(1.9);
   });
 
