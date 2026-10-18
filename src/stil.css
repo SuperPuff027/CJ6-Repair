@@ -1,0 +1,29 @@
+/* Vorläufig bis Schritt 2 (Design-Tokens hell/dunkel). */
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  background: #eef0f2;
+  color: #14171a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    background: #080c11;
+    color: #dce8f2;
+  }
+}
+body {
+  margin: 0;
+}
+.start {
+  padding: max(24px, env(safe-area-inset-top)) 20px 24px;
+  max-width: 40rem;
+}
+.start h1 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+.untertitel {
+  margin-top: 4px;
+  opacity: 0.7;
+}

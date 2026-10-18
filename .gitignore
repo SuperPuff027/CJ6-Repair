@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dev-dist/
+*.local
+.vite/
+
+# Digitalisierte Handbücher, Teilekataloge, eigene Fotos: privat, nur lokal
+wissensbasis/

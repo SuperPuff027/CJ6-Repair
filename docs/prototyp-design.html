@@ -1,0 +1,395 @@
+<title>CJ-6 Werkstatt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+/* Layout: Vollbild-3D-Szene, seitliches Glas-Flyout legt sich darüber, minimale Leiste oben, Status unten */
+:root{
+  --bg:#eef0f2; --fg:#14171a; --muted:#5d6670; --line:#111418; --line-faint:#c3c9cf;
+  --red:#d3261c; --glass:rgba(238,240,242,.62); --edge:rgba(20,23,26,.12); --dim:.86; --chip:rgba(20,23,26,.06);
+  --f-display:"Barlow Semi Condensed","Barlow","Segoe UI",system-ui,sans-serif;
+  --f-body:"Barlow","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#080c11; --fg:#dce8f2; --muted:#7f93a5; --line:#8fd0ff; --line-faint:#1d2a36;
+  --red:#ff4a3d; --glass:rgba(8,12,17,.55); --edge:rgba(143,208,255,.14); --dim:.62; --chip:rgba(143,208,255,.08); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#080c11; --fg:#dce8f2; --muted:#7f93a5; --line:#8fd0ff; --line-faint:#1d2a36;
+  --red:#ff4a3d; --glass:rgba(8,12,17,.55); --edge:rgba(143,208,255,.14); --dim:.62; --chip:rgba(143,208,255,.08); color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;overflow:hidden;transition:background .4s}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1.5px solid var(--line);outline-offset:2px;border-radius:6px}
+
+.bar{position:fixed;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;
+  padding:calc(14px + env(safe-area-inset-top,0px)) 18px 14px;pointer-events:none;z-index:2}
+.bar>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:14px}
+.icon-btn{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--edge);background:var(--glass);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.icon-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.4}
+.title{font-family:var(--f-display);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+.title small{display:block;font-family:var(--f-mono);font-weight:400;letter-spacing:.02em;text-transform:none;color:var(--muted);font-size:11px;margin-top:2px}
+
+/* Flyout */
+#flyout{position:fixed;top:0;bottom:0;left:0;width:min(380px,calc(100vw - 52px));z-index:3;
+  background:var(--glass);border-right:1px solid var(--edge);
+  -webkit-backdrop-filter:blur(7px) brightness(var(--dim));backdrop-filter:blur(7px) brightness(var(--dim));
+  transform:translateX(-102%);transition:transform .45s cubic-bezier(.2,.8,.2,1);
+  display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top,0px)) 0 env(safe-area-inset-bottom,0px)}
+#flyout.open{transform:none}
+.fly-head{display:flex;align-items:center;justify-content:space-between;padding:0 18px 12px}
+.tabs{display:flex;gap:4px;padding:0 18px 14px}
+.tab{flex:1;padding:9px 0;border-radius:8px;font-family:var(--f-display);font-weight:600;letter-spacing:.1em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--chip);color:var(--fg)}
+.pane{flex:1;overflow-y:auto;padding:0 18px 24px;min-height:0}
+.search{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--edge);background:transparent;color:var(--fg);font:inherit;margin-bottom:14px}
+.search::placeholder{color:var(--muted)}
+.group{margin-bottom:18px}
+.group h3{margin:0 0 6px;font-family:var(--f-display);font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.part{display:flex;width:100%;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;text-align:left}
+.part:hover{background:var(--chip)}
+.part .dot{width:7px;height:7px;border-radius:50%;border:1px solid var(--line);flex:none}
+.part[aria-pressed="true"]{background:var(--chip)}
+.part[aria-pressed="true"] .dot{background:var(--red);border-color:var(--red)}
+.part[aria-pressed="true"] .pname{color:var(--red)}
+.detail{padding:4px 10px 12px 27px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.detail p{margin:0 0 10px;max-width:60ch}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.ghost{padding:6px 11px;border:1px solid var(--edge);border-radius:999px;font-size:12.5px;color:var(--fg)}
+.ghost:hover{border-color:var(--line)}
+
+.diag-block{margin-bottom:22px}
+.diag-block label{display:block;font-family:var(--f-display);font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+textarea{width:100%;min-height:84px;resize:vertical;padding:10px 12px;border-radius:8px;border:1px solid var(--edge);background:transparent;color:var(--fg);font:inherit;line-height:1.45}
+.primary{margin-top:10px;padding:9px 16px;border-radius:999px;background:var(--fg);color:var(--bg);font-weight:500;font-size:13.5px}
+.result{margin-top:14px;padding:12px;border-radius:8px;border:1px solid var(--edge);font-size:13.5px;line-height:1.5}
+.result b{color:var(--red);font-weight:600}
+.pkg{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pkg span{font-family:var(--f-mono);font-size:11.5px;padding:3px 8px;border-radius:999px;background:var(--chip)}
+.tool{display:flex;justify-content:space-between;align-items:center;width:100%;padding:11px 10px;border-radius:8px;text-align:left}
+.tool:hover{background:var(--chip)}
+.tool small{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* HUD */
+.hud{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:1;
+  display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);white-space:nowrap;max-width:calc(100vw - 32px)}
+.sel{display:flex;align-items:center;gap:8px;padding:7px 8px 7px 13px;border-radius:999px;border:1px solid var(--edge);background:var(--glass);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--fg);overflow:hidden}
+.sel i{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none}
+.sel span{overflow:hidden;text-overflow:ellipsis}
+.sel button{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.sel button:hover{color:var(--fg)}
+.coord{position:fixed;right:18px;bottom:calc(22px + env(safe-area-inset-bottom,0px));font-family:var(--f-mono);font-size:11px;color:var(--muted);text-align:right;line-height:1.6}
+@media (max-width:640px){.coord{display:none}}
+@media (prefers-reduced-motion:reduce){#flyout{transition:none}}
+</style>
+
+<canvas id="scene" aria-label="3D-Outline-Modell des Jeep CJ-6"></canvas>
+
+<header class="bar">
+  <div class="brand">
+    <button class="icon-btn" id="openMenu" aria-label="Menü öffnen" aria-expanded="false" aria-controls="flyout">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h11M4 17h16"/></svg>
+    </button>
+    <div class="title">CJ-6<small>Baujahr 1974 · AMC 232 (unbestätigt)</small></div>
+  </div>
+  <button class="icon-btn" id="themeBtn" aria-label="Hell- oder Dunkelmodus">
+    <svg viewBox="0 0 24 24" id="themeIcon"></svg>
+  </button>
+</header>
+
+<aside id="flyout" aria-label="Menü">
+  <div class="fly-head">
+    <div class="title">Werkstatt</div>
+    <button class="icon-btn" id="closeMenu" aria-label="Menü schließen"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-parts" aria-selected="true" aria-controls="pane-parts">Bauteile</button>
+    <button class="tab" role="tab" id="tab-diag" aria-selected="false" aria-controls="pane-diag">Diagnose</button>
+  </div>
+  <div class="pane" id="pane-parts" role="tabpanel" aria-labelledby="tab-parts">
+    <input class="search" id="partSearch" type="search" placeholder="Bauteil suchen, z. B. Bremse" aria-label="Bauteil suchen">
+    <div id="partList"></div>
+  </div>
+  <div class="pane" id="pane-diag" role="tabpanel" aria-labelledby="tab-diag" hidden>
+    <div class="diag-block">
+      <label for="defect">Mangel eingeben</label>
+      <textarea id="defect" placeholder="z. B. Öl tropft am Verteilergetriebe">Bremsen vorne ziehen nach links</textarea>
+      <button class="primary" id="assign">Reparaturpaket erstellen</button>
+      <div id="result"></div>
+    </div>
+    <div class="diag-block">
+      <label>Weitere Diagnose</label>
+      <button class="tool">Geräusch aufnehmen <small>Audio · Spektrogramm</small></button>
+      <button class="tool">Foto-Diagnose <small>Kerzenbild, Leckage</small></button>
+      <button class="tool">Messwerte eingeben <small>Kompression, Zündung</small></button>
+      <button class="tool">Symptom-Baum <small>offline</small></button>
+    </div>
+    <p class="note">Prototyp: Die Zuordnung erkennt Stichwörter. Anleitung, Teile- und Werkzeugliste kommen später aus der Wissensbasis.</p>
+  </div>
+</aside>
+
+<div class="hud" id="hud"></div>
+<div class="coord" id="coord">Radstand 2565 mm<br>Ziehen: drehen · Scrollen: zoomen</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+const root = document.documentElement;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const css = n => getComputedStyle(root).getPropertyValue(n).trim();
+
+// ---------- Theme ----------
+const mq = matchMedia('(prefers-color-scheme: dark)');
+try { const t = localStorage.getItem('cj6-theme'); if (t) root.dataset.theme = t; } catch (e) {}
+const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : mq.matches;
+const sun = '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>';
+const moon = '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>';
+function syncTheme(){ document.getElementById('themeIcon').innerHTML = isDark() ? sun : moon; applyColors(); }
+document.getElementById('themeBtn').onclick = () => {
+  root.dataset.theme = isDark() ? 'light' : 'dark';
+  try { localStorage.setItem('cj6-theme', root.dataset.theme); } catch (e) {}
+  syncTheme();
+};
+mq.addEventListener('change', syncTheme);
+
+// ---------- Scene ----------
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 100);
+const HOME = {pos:new THREE.Vector3(5.2, 2.6, 5.6), target:new THREE.Vector3(0, 0.75, 0)};
+camera.position.copy(HOME.pos);
+const controls = new THREE.OrbitControls(camera, canvas);
+controls.target.copy(HOME.target);
+controls.enableDamping = true; controls.dampingFactor = 0.08;
+controls.minDistance = 1.2; controls.maxDistance = 14;
+controls.maxPolarAngle = Math.PI * 0.53;
+controls.autoRotate = !reduce; controls.autoRotateSpeed = 0.45;
+controls.addEventListener('start', () => { controls.autoRotate = false; });
+
+// ---------- Geometry helpers (Meter, x = Fahrtrichtung) ----------
+const B = (w,h,d,x,y,z,rx=0,ry=0,rz=0) => { const g = new THREE.BoxGeometry(w,h,d); if(rx)g.rotateX(rx); if(ry)g.rotateY(ry); if(rz)g.rotateZ(rz); g.translate(x,y,z); return g; };
+const C = (r1,r2,h,seg,x,y,z,axis='y') => { const g = new THREE.CylinderGeometry(r1,r2,h,seg); if(axis==='z')g.rotateX(Math.PI/2); if(axis==='x')g.rotateZ(Math.PI/2); g.translate(x,y,z); return g; };
+const up = new THREE.Vector3(0,1,0);
+const T = (a,b,r) => { const A = new THREE.Vector3(...a), Bv = new THREE.Vector3(...b); const g = new THREE.CylinderGeometry(r,r,A.distanceTo(Bv),16);
+  g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up, Bv.clone().sub(A).normalize())); const m = A.add(Bv).multiplyScalar(.5); g.translate(m.x,m.y,m.z); return g; };
+const D = (c,dir,r,h) => { const g = new THREE.CylinderGeometry(r,r,h,36); g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(up, new THREE.Vector3(...dir).normalize())); g.translate(...c); return g; };
+const plate = (shape, depth, fn) => { const g = new THREE.ExtrudeGeometry(shape,{depth, bevelEnabled:false, curveSegments:24}); fn(g); return g; };
+
+function tubShape(){
+  const s = new THREE.Shape();
+  s.moveTo(-1.86,0.62); s.lineTo(-1.86,1.2); s.lineTo(-0.5,1.2);
+  s.quadraticCurveTo(-0.44,0.95,-0.2,0.95); s.lineTo(0.18,0.95);
+  s.quadraticCurveTo(0.4,0.95,0.44,1.2); s.lineTo(0.6,1.28); s.lineTo(0.6,0.62);
+  s.lineTo(-0.82,0.62); s.absarc(-1.28,0.62,0.46,0,Math.PI,false); s.lineTo(-1.86,0.62);
+  return s;
+}
+function grilleShape(){
+  const s = new THREE.Shape();
+  s.moveTo(-0.45,0.64); s.lineTo(0.45,0.64); s.lineTo(0.42,1.26); s.lineTo(-0.42,1.26); s.lineTo(-0.45,0.64);
+  for (let i=0;i<7;i++){ const z=-0.21+i*0.07, p=new THREE.Path(); p.moveTo(z-0.02,0.8); p.lineTo(z+0.02,0.8); p.lineTo(z+0.02,1.14); p.lineTo(z-0.02,1.14); p.lineTo(z-0.02,0.8); s.holes.push(p); }
+  for (const z of [-0.33,0.33]){ const p=new THREE.Path(); p.absarc(z,1.02,0.085,0,Math.PI*2,false); s.holes.push(p); }
+  return s;
+}
+function frameShape(w,h,t){
+  const s = new THREE.Shape(); s.moveTo(-w/2,0); s.lineTo(w/2,0); s.lineTo(w/2,h); s.lineTo(-w/2,h); s.lineTo(-w/2,0);
+  const p = new THREE.Path(); p.moveTo(-w/2+t,t); p.lineTo(w/2-t,t); p.lineTo(w/2-t,h-t); p.lineTo(-w/2+t,h-t); p.lineTo(-w/2+t,t); s.holes.push(p);
+  return s;
+}
+const AX = 1.28, WR = 0.38, TZ = 0.65;
+const wheels = [];
+for (const x of [AX,-AX]) for (const z of [TZ,-TZ]) { wheels.push(C(WR,WR,0.24,40,x,WR,z,'z'), C(0.21,0.21,0.2,32,x,WR,z,'z')); }
+
+// ---------- Bauteile ----------
+const PARTS = [
+ {id:'tub', g:'Karosserie', name:'Karosseriewanne', desc:'Lange Wanne des CJ-6 mit Türausschnitten und hinteren Radläufen. Rost an Wannenboden und Radläufen regelmäßig prüfen.', keys:['wanne','karosserie','boden','rost an der wanne'],
+  geo:[plate(tubShape(),1.4,g=>g.translate(0,0,-0.7))]},
+ {id:'hood', g:'Karosserie', name:'Motorhaube', desc:'Flache Haube mit seitlichen Haltern.', keys:['haube','motorhaube'], geo:[B(1.25,0.3,1.0,1.24,1.13,0)]},
+ {id:'fender', g:'Karosserie', name:'Kotflügel vorne', desc:'Flache Kotflügel links und rechts.', keys:['kotflügel','kotfluegel','fender'],
+  geo:[-1,1].flatMap(s=>[B(1.25,0.025,0.3,1.24,0.98,s*0.66), B(0.025,0.12,0.3,1.86,0.92,s*0.66), B(0.3,0.025,0.3,0.5,0.86,s*0.66,0,0,0.75)])},
+ {id:'grille', g:'Karosserie', name:'Kühlergrill & Scheinwerfer', desc:'Grill mit sieben Schlitzen und zwei Rundscheinwerfern.', keys:['grill','scheinwerfer','licht'],
+  geo:[plate(grilleShape(),0.03,g=>{g.rotateY(Math.PI/2); g.translate(1.9,0,0);})]},
+ {id:'windshield', g:'Karosserie', name:'Frontscheibenrahmen', desc:'Klappbarer Rahmen. Dichtung und Scharniere prüfen.', keys:['scheibe','frontscheibe','windschutz'],
+  geo:[plate(frameShape(1.36,0.46,0.05),0.03,g=>{g.rotateY(Math.PI/2); g.rotateZ(0.18); g.translate(0.62,1.28,0);})]},
+ {id:'bumper', g:'Karosserie', name:'Stoßstangen', desc:'Vordere und hintere Stoßstange.', keys:['stoßstange','stossstange'], geo:[B(0.1,0.12,1.5,2.02,0.6,0), B(0.08,0.1,1.4,-1.92,0.6,0)]},
+ {id:'seats', g:'Karosserie', name:'Sitze', desc:'Zwei Vordersitze und Rückbank.', keys:['sitz','sitze','bank'],
+  geo:[-1,1].flatMap(s=>[B(0.42,0.08,0.42,-0.15,0.84,s*0.32), B(0.06,0.42,0.42,-0.4,1.07,s*0.32,0,0,0.12)]).concat([B(0.42,0.08,0.95,-1.0,0.84,0), B(0.06,0.4,0.95,-1.24,1.06,0,0,0,0.12)])},
+ {id:'spare', g:'Karosserie', name:'Reserverad', desc:'Am Heck montiert.', keys:['reserverad','ersatzrad'], geo:[C(0.36,0.36,0.22,40,-2.03,0.98,0,'x'), C(0.2,0.2,0.18,32,-2.03,0.98,0,'x')]},
+
+ {id:'engine', g:'Motor & Antrieb', name:'Motor', desc:'Reihensechser, vermutlich AMC 232 (3,8 l). Motorcode am Block noch bestätigen.', keys:['motor','zylinder','ventil','zünd','zuend','vergaser','kompression','öldruck','oeldruck','ruckelt','startet'],
+  geo:[B(0.72,0.4,0.32,1.22,0.8,0), B(0.72,0.12,0.3,1.22,1.06,0), B(0.66,0.06,0.2,1.22,1.15,0.02), B(0.6,0.12,0.26,1.22,0.54,0), C(0.17,0.17,0.07,36,1.3,1.21,-0.06), C(0.19,0.19,0.02,32,1.63,0.86,0,'x')]},
+ {id:'radiator', g:'Motor & Antrieb', name:'Kühler', desc:'Kühlkreislauf; der Verdampfer der Gasanlage hängt daran.', keys:['kühl','kuehl','wasser','temperatur','überhitz','ueberhitz'], geo:[B(0.06,0.55,0.72,1.78,0.92,0)]},
+ {id:'gearbox', g:'Motor & Antrieb', name:'Getriebe', desc:'Schaltgetriebe mit Glocke. Typ im Fahrzeugprofil festhalten.', keys:['getriebe','schalt','kupplung','gang'],
+  geo:[C(0.2,0.15,0.16,32,0.78,0.78,0,'x'), B(0.34,0.22,0.22,0.54,0.74,0)]},
+ {id:'transfer', g:'Motor & Antrieb', name:'Verteilergetriebe', desc:'Dana 20 laut Baujahr; im Profil bestätigen.', keys:['verteiler','dana 20','allrad','4x4'], geo:[B(0.22,0.3,0.36,0.26,0.66,-0.08)]},
+ {id:'shafts', g:'Motor & Antrieb', name:'Kardanwellen', desc:'Vordere und hintere Gelenkwelle. Abschmieren nicht vergessen.', keys:['kardan','gelenkwelle','welle','vibration'],
+  geo:[T([0.2,0.56,-0.2],[AX-0.1,WR,-0.25],0.03), T([0.14,0.62,0],[-AX+0.1,WR,0],0.035)]},
+
+ {id:'frame', g:'Fahrwerk', name:'Rahmen', desc:'Leiterrahmen mit Querträgern.', keys:['rahmen','querträger','quertraeger'],
+  geo:[B(3.5,0.12,0.07,0.05,0.55,0.42), B(3.5,0.12,0.07,0.05,0.55,-0.42), ...[1.75,0.5,-0.7,-1.7].map(x=>B(0.07,0.1,0.77,x,0.55,0))]},
+ {id:'axle-f', g:'Fahrwerk', name:'Vorderachse', desc:'Dana 30 laut Baujahr; im Profil bestätigen.', keys:['vorderachse','achse vorne'],
+  geo:[C(0.045,0.045,1.24,24,AX,WR,0,'z'), C(0.13,0.13,0.16,32,AX-0.02,WR,-0.25,'x')]},
+ {id:'axle-r', g:'Fahrwerk', name:'Hinterachse', desc:'Dana 44 laut Baujahr; im Profil bestätigen.', keys:['hinterachse','achse hinten','differential'],
+  geo:[C(0.045,0.045,1.24,24,-AX,WR,0,'z'), C(0.13,0.13,0.16,32,-AX+0.02,WR,0,'x')]},
+ {id:'springs', g:'Fahrwerk', name:'Blattfedern', desc:'Vier Blattfederpakete mit Schäkeln.', keys:['feder','blattfeder','stoßdämpfer','federung'],
+  geo:[AX,-AX].flatMap(x=>[B(1.0,0.04,0.06,x,0.45,0.42), B(1.0,0.04,0.06,x,0.45,-0.42)])},
+ {id:'brakes-f', g:'Fahrwerk', name:'Bremsen vorne', desc:'Trommelbremsen laut Baujahr (Scheiben erst ab 1977). Am Fahrzeug prüfen.', keys:['bremse vorne','bremsen vorne','vorne bremse','bremsscheibe','bremsbel'],
+  geo:[C(0.15,0.15,0.08,32,AX,WR,0.53,'z'), C(0.15,0.15,0.08,32,AX,WR,-0.53,'z')]},
+ {id:'brakes-r', g:'Fahrwerk', name:'Bremsen hinten', desc:'Trommelbremsen mit Handbremse.', keys:['bremse hinten','bremsen hinten','handbremse','trommel'],
+  geo:[C(0.15,0.15,0.08,32,-AX,WR,0.53,'z'), C(0.15,0.15,0.08,32,-AX,WR,-0.53,'z')]},
+ {id:'wheels', g:'Fahrwerk', name:'Räder & Reifen', desc:'Vier Räder, Reifengröße im Profil erfassen.', keys:['rad','räder','reifen','felge'], geo:wheels},
+ {id:'steering', g:'Fahrwerk', name:'Lenkung', desc:'Lenkrad und Lenksäule. Sicherheitsrelevant: nur nach Handbuch arbeiten.', keys:['lenk','spiel in der lenkung'],
+  geo:[D([0.1,1.27,0.32],[-0.43,0.5,0],0.19,0.02), T([0.55,0.72,0.32],[0.12,1.25,0.32],0.02)]},
+
+ {id:'fuel', g:'Kraftstoff', name:'Benzintank', desc:'Unter dem Fahrersitz.', keys:['benzin','tank','kraftstoff','sprit'], geo:[B(0.4,0.16,0.4,-0.15,0.71,0.32)]},
+ {id:'lpg', g:'Kraftstoff', name:'Gastank (LPG)', desc:'Nachgerüstete Gasanlage. Tankbaujahr und Typschild prüfen; Gasgeruch heißt sofort abbrechen.', keys:['gas','lpg','autogas','verdampfer','multiventil'],
+  geo:[C(0.17,0.17,0.95,36,-1.55,0.88,0,'z'), B(0.08,0.06,0.08,-1.55,1.08,0.3)]},
+ {id:'exhaust', g:'Kraftstoff', name:'Auspuffanlage', desc:'Krümmer, Schalldämpfer, Endrohr.', keys:['auspuff','schalldämpfer','endrohr','abgas'],
+  geo:[T([1.0,0.7,0.2],[0.8,0.45,0.27],0.025), T([0.8,0.45,0.27],[-0.42,0.45,0.27],0.025), C(0.1,0.1,0.55,32,-0.7,0.45,0.27,'x'), T([-0.98,0.45,0.27],[-1.95,0.45,0.27],0.022)]},
+];
+
+const lineColor = new THREE.Color(), redColor = new THREE.Color();
+const pickables = [];
+let selected = null;
+
+for (const p of PARTS){
+  p.line = new THREE.LineBasicMaterial({transparent:true});
+  p.fill = new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false, side:THREE.DoubleSide});
+  p.box = new THREE.Box3();
+  for (const g of p.geo){
+    scene.add(new THREE.LineSegments(new THREE.EdgesGeometry(g, 25), p.line));
+    const m = new THREE.Mesh(g, p.fill); m.userData.id = p.id; scene.add(m); pickables.push(m);
+    g.computeBoundingBox(); p.box.union(g.boundingBox);
+  }
+}
+// Bodenkreis
+const ringPts = new THREE.EllipseCurve(0,0,2.9,2.9,0,Math.PI*2).getPoints(120).map(v=>new THREE.Vector3(v.x,0,v.y));
+const ringMat = new THREE.LineBasicMaterial();
+scene.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(ringPts), ringMat));
+
+function applyColors(){
+  lineColor.set(css('--line')); redColor.set(css('--red')); ringMat.color.set(css('--line-faint'));
+  for (const p of PARTS){
+    const on = selected === p;
+    p.line.color.copy(on ? redColor : lineColor);
+    p.line.opacity = !selected || on ? 1 : 0.22;
+    p.fill.color.copy(redColor); p.fill.opacity = on ? 0.13 : 0;
+  }
+}
+
+// ---------- Kamera-Flug ----------
+let fly = null;
+function flyTo(pos, target){
+  if (reduce){ camera.position.copy(pos); controls.target.copy(target); return; }
+  fly = {p0:camera.position.clone(), t0:controls.target.clone(), p1:pos, t1:target, start:performance.now(), dur:950};
+}
+function focusPart(p){
+  const c = p.box.getCenter(new THREE.Vector3()), s = p.box.getSize(new THREE.Vector3());
+  const dir = new THREE.Vector3(c.x < -0.9 ? -1 : 1, 0.62, c.z < -0.08 ? -1.15 : 1.15).normalize();
+  const dist = Math.max(1.5, Math.max(s.x, s.y, s.z) * 2.3 + 0.9);
+  flyTo(c.clone().add(dir.multiplyScalar(dist)), c);
+}
+
+// ---------- Auswahl ----------
+const hud = document.getElementById('hud');
+function select(id, {focus=true} = {}){
+  selected = PARTS.find(p => p.id === id) || null;
+  controls.autoRotate = false;
+  applyColors(); renderList(); renderHud();
+  if (selected && focus) focusPart(selected);
+  if (!selected) flyTo(HOME.pos.clone(), HOME.target.clone());
+  if (selected && innerWidth < 700) setMenu(false);
+}
+function renderHud(){
+  hud.innerHTML = selected
+    ? `<div class="sel"><i></i><span>${selected.name}</span><button aria-label="Auswahl aufheben" id="clearSel"><svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`
+    : `<span>Bauteil im Menü wählen oder im Modell antippen</span>`;
+  const b = document.getElementById('clearSel'); if (b) b.onclick = () => select(null);
+}
+
+// ---------- Flyout ----------
+const fly_ = document.getElementById('flyout'), openBtn = document.getElementById('openMenu');
+function setMenu(open){ fly_.classList.toggle('open', open); openBtn.setAttribute('aria-expanded', open); if (open) document.getElementById('partSearch').focus({preventScroll:true}); }
+openBtn.onclick = () => setMenu(true);
+document.getElementById('closeMenu').onclick = () => setMenu(false);
+addEventListener('keydown', e => { if (e.key === 'Escape') fly_.classList.contains('open') ? setMenu(false) : select(null); });
+
+const tabs = {parts:document.getElementById('tab-parts'), diag:document.getElementById('tab-diag')};
+function showTab(k){ for (const [n,b] of Object.entries(tabs)){ b.setAttribute('aria-selected', n===k); document.getElementById('pane-'+n).hidden = n!==k; } }
+tabs.parts.onclick = () => showTab('parts'); tabs.diag.onclick = () => showTab('diag');
+
+const list = document.getElementById('partList'), search = document.getElementById('partSearch');
+const norm = s => s.toLowerCase();
+function renderList(){
+  const q = norm(search.value.trim());
+  const groups = {};
+  for (const p of PARTS){
+    if (q && !norm(p.name + ' ' + p.g + ' ' + p.keys.join(' ')).includes(q)) continue;
+    (groups[p.g] ||= []).push(p);
+  }
+  list.innerHTML = Object.entries(groups).map(([g, ps]) => `<div class="group"><h3>${g}</h3>${ps.map(p => `
+    <button class="part" data-id="${p.id}" aria-pressed="${selected===p}"><span class="dot"></span><span class="pname">${p.name}</span></button>
+    ${selected===p ? `<div class="detail"><p>${p.desc}</p><div class="actions"><button class="ghost" data-act="defect">Mangel melden</button><button class="ghost" data-act="reset">Gesamtansicht</button></div></div>` : ''}`).join('')}</div>`).join('')
+    || `<p class="note">Kein Bauteil passt zu „${search.value}“.</p>`;
+}
+list.addEventListener('click', e => {
+  const act = e.target.closest('[data-act]');
+  if (act){
+    if (act.dataset.act === 'reset') select(null);
+    else { showTab('diag'); const t = document.getElementById('defect'); t.value = selected.name + ': '; t.focus(); }
+    return;
+  }
+  const b = e.target.closest('.part'); if (!b) return;
+  select(selected && selected.id === b.dataset.id ? null : b.dataset.id);
+});
+search.addEventListener('input', renderList);
+
+// ---------- Mängel-Eingabe (Prototyp) ----------
+document.getElementById('assign').onclick = () => {
+  const txt = norm(document.getElementById('defect').value);
+  const out = document.getElementById('result');
+  let best = null, bestLen = 0;
+  for (const p of PARTS) for (const k of p.keys) if (txt.includes(k) && k.length > bestLen){ best = p; bestLen = k.length; }
+  if (!best && /brems/.test(txt)) best = PARTS.find(p => p.id === (/hinten/.test(txt) ? 'brakes-r' : 'brakes-f'));
+  if (!best){ out.innerHTML = `<div class="result">Kein Bauteil erkannt. Nenne die Baugruppe, z. B. „Bremse vorne“ oder „Verteilergetriebe“.</div>`; return; }
+  out.innerHTML = `<div class="result">Zugeordnet: <b>${best.name}</b><div class="pkg"><span>Anleitung</span><span>Einkaufsliste</span><span>Werkzeug</span><span>To-do</span></div></div>`;
+  select(best.id);
+};
+
+// ---------- Klick ins Modell ----------
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(); let down = null;
+canvas.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+canvas.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX-down[0], e.clientY-down[1]) > 5) return;
+  ndc.set(e.clientX/innerWidth*2-1, -(e.clientY/innerHeight)*2+1);
+  ray.setFromCamera(ndc, camera);
+  // Bei Überlagerung (z. B. Motor unter der Haube) gewinnt das kleinste getroffene Bauteil
+  const vol = p => { const s = p.box.getSize(new THREE.Vector3()); return s.x*s.y*s.z; };
+  const hits = [...new Set(ray.intersectObjects(pickables).map(h => h.object.userData.id))].map(id => PARTS.find(p => p.id === id));
+  const hit = hits.sort((a,b) => vol(a) - vol(b))[0];
+  if (hit) select(hit.id); else if (selected) select(null);
+});
+
+// ---------- Loop ----------
+function resize(){ renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth/innerHeight;
+  camera.fov = innerWidth < 640 ? 44 : 32; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize);
+const ease = t => t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+function tick(now){
+  if (fly){ const k = Math.min(1, (now - fly.start)/fly.dur), e = ease(k);
+    camera.position.lerpVectors(fly.p0, fly.p1, e); controls.target.lerpVectors(fly.t0, fly.t1, e); if (k === 1) fly = null; }
+  controls.update(); renderer.render(scene, camera); requestAnimationFrame(tick);
+}
+resize(); syncTheme(); renderList(); renderHud();
+setTimeout(() => setMenu(innerWidth >= 700), 500);
+requestAnimationFrame(tick);
+})();
+</script>
