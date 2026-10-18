@@ -728,3 +728,69 @@ select.eingabe {
 .foto-ablage .datei-knopf {
   margin-top: 4px;
 }
+
+/* Bauteildetail: Notizen und Fotos */
+.teil-zaehler {
+  margin-left: auto;
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--chip);
+  font-family: var(--schrift-mono);
+  font-size: 11px;
+  text-align: center;
+  color: var(--gedaempft);
+}
+.teil-detail {
+  color: var(--fg);
+}
+.detail-titel {
+  margin: 12px 0 6px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gedaempft);
+}
+.detail-titel:first-child {
+  margin-top: 4px;
+}
+.detail-zurueck {
+  margin-top: 14px;
+}
+.notiz-liste {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+.notiz {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--kante);
+}
+.notiz-text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+.notiz-info {
+  margin: 2px 0 2px;
+  font-size: 12px;
+  color: var(--gedaempft);
+}
+.notiz-aktionen {
+  display: flex;
+  gap: 16px;
+}
+.notiz .eingabe {
+  margin-bottom: 8px;
+}
+.notiz-neu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.notiz-neu .eingabe {
+  width: 100%;
+}

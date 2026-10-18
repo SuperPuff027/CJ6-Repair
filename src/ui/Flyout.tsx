@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { gruppenSchluessel, teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
+import { db } from '../db/datenbank';
+import { zaehleJeBezug } from '../logic/bezug';
 import { passtZurSuche } from '../logic/suche';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS, TEIL_GRUPPE, type ModellTeilId } from '../szene/modell';
 import { FahrzeugProfil } from './FahrzeugProfil';
+import { FotoAblage } from './FotoAblage';
+import { Notizen } from './Notizen';
 import { WissensbasisImport } from './WissensbasisImport';
 
 type Reiter = 'bauteile' | 'diagnose' | 'fahrzeug';
@@ -25,6 +29,17 @@ export function Flyout(props: {
   const [reiter, setzeReiter] = useState<Reiter>('bauteile');
   const [anfrage, setzeAnfrage] = useState('');
   const suchfeld = useRef<HTMLInputElement>(null);
+  const [notizZaehler, setzeNotizZaehler] = useState<Map<string, number>>(new Map());
+
+  // Notizen sind klein; Fotos werden hier bewusst nicht gezählt, um keine Bilddaten zu laden.
+  const zaehleNotizen = () =>
+    db.notizen.toArray().then(
+      (alle) => setzeNotizZaehler(zaehleJeBezug(alle, 'modellteil')),
+      (e) => console.error('Notizen nicht lesbar', e),
+    );
+  useEffect(() => {
+    if (props.offen) void zaehleNotizen();
+  }, [props.offen]);
 
   // Am Laptop gleich tippen können; am Handy würde das die Tastatur über das Menü schieben.
   useEffect(() => {
@@ -87,11 +102,19 @@ export function Flyout(props: {
                   <button class="teil-knopf" aria-pressed={gewaehlt} onClick={() => props.waehle(gewaehlt ? null : id)}>
                     <span class="teil-punkt" aria-hidden="true" />
                     <span class="teil-name">{t(teilSchluessel(id))}</span>
+                    {(notizZaehler.get(id) ?? 0) > 0 && (
+                      <span class="teil-zaehler" aria-label={notizZaehler.get(id) === 1 ? t('notiz.anzahl_eins') : t('notiz.anzahl', { n: notizZaehler.get(id)! })}>
+                        {notizZaehler.get(id)}
+                      </span>
+                    )}
                   </button>
                   {gewaehlt && (
                     <div class="teil-detail">
-                      <p>{t('detail.hinweis')}</p>
-                      <button class="rand-knopf" onClick={() => props.waehle(null)}>
+                      <h4 class="detail-titel">{t('notiz.titel')}</h4>
+                      <Notizen art="modellteil" id={id} beiAenderung={zaehleNotizen} />
+                      <h4 class="detail-titel">{t('detail.fotos')}</h4>
+                      <FotoAblage art="modellteil" id={id} hinweis={t('detail.fotos_hinweis')} />
+                      <button class="rand-knopf detail-zurueck" onClick={() => props.waehle(null)}>
                         {t('detail.gesamtansicht')}
                       </button>
                     </div>

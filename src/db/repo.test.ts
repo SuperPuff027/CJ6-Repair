@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { neuerDatensatz } from '../logic/datensatz';
 import type { Fahrzeug, Foto, Notiz, Umbau } from '../model/typen';
 import { db } from './datenbank';
-import { aendereFahrzeug, ladeAktive, ladeFahrzeug, ladeFotos, ladeNotizen, ladeUmbauten, loescheWeich, speichere } from './repo';
+import { aendereFahrzeug, ladeAktive, ladeFahrzeug, ladeFotos, ladeNotizen, ladeUmbauten, loescheFoto, loescheWeich, speichere } from './repo';
 
 const ALT = new Date('2026-01-01T00:00:00Z');
 
@@ -67,6 +67,19 @@ describe('Notizen und Fotos zu einem Bezug', () => {
     await db.fotos.put(foto);
     const [geladen] = await ladeFotos('modellteil', 'bremsen_vorne');
     expect(geladen?.blob.size).toBe(12);
+  });
+
+  it('gibt beim Entfernen eines Fotos die Bilddaten frei', async () => {
+    const foto = neuerDatensatz<Foto>(
+      { bezug_art: 'modellteil', bezug_id: 'motor', blob: new Blob(['Beispielbild']), aufgenommen_am: ALT.toISOString(), notiz: null },
+      ALT,
+    );
+    await db.fotos.put(foto);
+    await loescheFoto(foto.id);
+    expect(await ladeFotos('modellteil', 'motor')).toEqual([]);
+    const roh = await db.fotos.get(foto.id);
+    expect(roh).toMatchObject({ geloescht: true });
+    expect(roh?.blob.size).toBe(0);
   });
 });
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { db } from '../db/datenbank';
-import { ladeFotos, loescheWeich, speichere } from '../db/repo';
+import { ladeFotos, loescheFoto, speichere } from '../db/repo';
 import { useSprache } from '../i18n/kontext';
 import { neuerDatensatz } from '../logic/datensatz';
 import { zielGroesse } from '../logic/foto';
@@ -69,7 +69,7 @@ export function FotoAblage(props: { art: BezugArt; id: string; hinweis?: string 
   const entfernen = async (id: string) => {
     setzeLoeschFrage(null);
     setzeGross(null);
-    await loescheWeich(db.fotos, id);
+    await loescheFoto(id);
     await laden();
   };
 

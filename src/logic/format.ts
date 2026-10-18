@@ -15,3 +15,10 @@ export function formatiereDatum(datum: string, sprache: Sprache): string {
 export function formatiereZahl(zahl: number, sprache: Sprache, nachkommastellen = 2): string {
   return new Intl.NumberFormat(GEBIETSSCHEMA[sprache], { maximumFractionDigits: nachkommastellen }).format(zahl);
 }
+
+/** Lokales Datum „JJJJ-MM-TT“ eines Zeitstempels, z. B. für „Notiz vom …“. */
+export function lokalesDatum(zeitpunkt: string): string {
+  const d = new Date(zeitpunkt);
+  const zwei = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${zwei(d.getMonth() + 1)}-${zwei(d.getDate())}`;
+}

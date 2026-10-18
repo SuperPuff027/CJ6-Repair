@@ -55,6 +55,14 @@ export function ladeNotizen(art: BezugArt, id: string): Promise<Notiz[]> {
   return ladeZuBezug(db.notizen, art, id);
 }
 
+/** Entfernt ein Foto weich und gibt dabei die Bilddaten frei; für den Abgleich bleibt nur die Löschmarke. */
+export async function loescheFoto(id: string): Promise<void> {
+  await db.transaction('rw', db.fotos, async () => {
+    const foto = await db.fotos.get(id);
+    if (foto && !foto.geloescht) await db.fotos.put({ ...alsGeloescht(foto, new Date()), blob: new Blob([]) });
+  });
+}
+
 export function ladeFotos(art: BezugArt, id: string): Promise<Foto[]> {
   return ladeZuBezug(db.fotos, art, id);
 }
