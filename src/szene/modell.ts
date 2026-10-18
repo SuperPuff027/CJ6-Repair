@@ -110,17 +110,21 @@ function drehteil(profil: [number, number][], richtung: Punkt, mitte: Punkt, seg
   return ausrichten(g, richtung, mitte);
 }
 
-function rohr(a: Punkt, b: Punkt, r: number, segmente = 16) {
+/**
+ * Rohr zwischen zwei Punkten. Höchstens acht Seiten: Glatte Rohre hätten keine Kante über der
+ * Schwelle und würden im Outline-Modell nur als winzige Endkreise erscheinen.
+ */
+function rohr(a: Punkt, b: Punkt, r: number, segmente = 6) {
   const start = new Vector3(...a);
   const ende = new Vector3(...b);
-  const g = new CylinderGeometry(r, r, start.distanceTo(ende), segmente);
+  const g = new CylinderGeometry(r, r, start.distanceTo(ende), Math.min(segmente, 8));
   const mitte = start.clone().add(ende).multiplyScalar(0.5);
   return ausrichten(g, [ende.x - start.x, ende.y - start.y, ende.z - start.z], [mitte.x, mitte.y, mitte.z]);
 }
 
 /** Rohrleitung über mehrere Punkte. */
 function leitung(punkte: Punkt[], r: number) {
-  return punkte.slice(1).map((p, i) => rohr(punkte[i]!, p, r, 12));
+  return punkte.slice(1).map((p, i) => rohr(punkte[i]!, p, r));
 }
 
 const EXTRUSION = { bevelEnabled: false, curveSegments: 20 } as const;
@@ -130,9 +134,12 @@ function seitenteil(form: Shape, tiefe: number, z0: number) {
   return new ExtrudeGeometry(form, { ...EXTRUSION, depth: tiefe }).translate(0, 0, z0);
 }
 
-/** Querprofil (z, y) in x-Richtung ausgezogen, von xVorn - laenge bis xVorn. */
-function querteil(form: Shape, laenge: number, xVorn: number) {
-  const g = new ExtrudeGeometry(form, { ...EXTRUSION, depth: laenge });
+/**
+ * Querprofil (z, y) in x-Richtung ausgezogen, von xVorn - laenge bis xVorn.
+ * `kantig`: Rundungen in wenigen Stufen, damit lange gerundete Flächen (Haube) Längslinien zeigen.
+ */
+function querteil(form: Shape, laenge: number, xVorn: number, kantig = false) {
+  const g = new ExtrudeGeometry(form, { ...EXTRUSION, depth: laenge, curveSegments: kantig ? 3 : EXTRUSION.curveSegments });
   g.rotateY(-Math.PI / 2); // Profil-x → Welt-z, Auszug → Welt -x
   return g.translate(xVorn, 0, 0);
 }
@@ -453,7 +460,7 @@ export function baueModell(): ModellTeil[] {
       id: 'motorhaube',
       gruppe: 'karosserie',
       geometrien: [
-        querteil(haubenProfil(), GRILL_X - SPRITZWAND_X - 0.03, GRILL_X - 0.01),
+        querteil(haubenProfil(), GRILL_X - SPRITZWAND_X - 0.03, GRILL_X - 0.01, true),
         ...SEITEN.map((s) => block(1.56, 1.62, 0.93, 0.98, s * 0.49, s * 0.505)), // Haubenhalter
       ],
     },
@@ -510,7 +517,7 @@ export function baueModell(): ModellTeil[] {
       geometrien: [
         block(0.66, 1.46, 0.52, 0.84, -0.15, 0.15), // Block (Reihensechser)
         block(0.68, 1.44, 0.84, 0.93, -0.135, 0.135), // Zylinderkopf
-        querteil(abgerundet(-0.11, 0.93, 0.11, 0.99, 0.025, new Shape()) as Shape, 0.72, 1.42), // Ventildeckel
+        querteil(abgerundet(-0.11, 0.93, 0.11, 0.99, 0.025, new Shape()) as Shape, 0.72, 1.42, true), // Ventildeckel
         block(0.72, 1.4, 0.4, 0.52, -0.13, 0.13), // Ölwanne
         block(0.75, 1.35, 0.78, 0.86, 0.15, 0.24), // Ansaugkrümmer
         rohr([0.75, 0.72, 0.2], [1.35, 0.72, 0.2], 0.03), // Abgaskrümmer
