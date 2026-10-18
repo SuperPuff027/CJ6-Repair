@@ -1,14 +1,13 @@
-import { useSprache } from './i18n/kontext';
+import { Buehne } from './ui/Buehne';
 import { Leiste } from './ui/Leiste';
+import { useThema } from './ui/useThema';
 
 export function App() {
-  const { t } = useSprache();
+  const { thema, umschalten } = useThema();
   return (
     <>
-      <Leiste />
-      <main class="buehne">
-        <p class="hinweis">{t('start.hinweis')}</p>
-      </main>
+      <Leiste thema={thema} themaUmschalten={umschalten} />
+      <Buehne thema={thema} />
     </>
   );
 }

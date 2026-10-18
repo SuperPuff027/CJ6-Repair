@@ -2,7 +2,8 @@
 export const de = {
   'app.titel': 'CJ6-Repair',
   'app.untertitel': 'Jeep CJ-6 · Baujahr {jahr}',
-  'start.hinweis': 'Hier erscheint bald das 3D-Modell deines CJ-6.',
+  'buehne.modell': '3D-Modell des Jeep CJ-6',
+  'buehne.bedienhinweis': 'Ziehen zum Drehen · Zwei Finger zum Zoomen',
 
   'leiste.thema_hell': 'Hellen Modus einschalten',
   'leiste.thema_dunkel': 'Dunklen Modus einschalten',

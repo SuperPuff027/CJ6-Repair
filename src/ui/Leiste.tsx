@@ -1,7 +1,7 @@
 import { schreibe, SCHLUESSEL } from '../geraet/speicher';
 import { useSprache } from '../i18n/kontext';
 import type { Sprache } from '../logic/sprache';
-import { useThema } from './useThema';
+import type { Thema } from '../logic/thema';
 
 const BAUJAHR = 1974;
 
@@ -17,9 +17,9 @@ const MOND = (
   </svg>
 );
 
-export function Leiste() {
+export function Leiste(props: { thema: Thema; themaUmschalten: () => void }) {
   const { t, sprache, setzeSprache } = useSprache();
-  const { thema, umschalten } = useThema();
+  const { thema, themaUmschalten: umschalten } = props;
 
   const wechsleSprache = () => {
     const neu: Sprache = sprache === 'de' ? 'en' : 'de';

@@ -35,6 +35,8 @@ export function useThema() {
   const umschalten = () => {
     const neu = gegenteil(thema);
     schreibe(SCHLUESSEL.thema, neu);
+    // Sofort anwenden: Kind-Effekte (z. B. die 3D-Bühne) laufen vor diesem Hook und lesen die neuen Tokens.
+    wendeThemaAn(neu);
     setzeGespeichert(neu);
   };
   return { thema, umschalten };

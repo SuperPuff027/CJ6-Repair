@@ -38,7 +38,7 @@ Die Werte kommen aus dem Werkstatthandbuch und dem Teilekatalog von 1974 (noch z
 ## Schritte
 1. [x] **Projektgerüst:** Vite + TS strict, ESLint, Vitest, Preact, `npm run check`, PWA-Manifest „CJ6-Repair“ mit Icons und Service Worker, Übersetzungen de/en, GitHub-Action mit Deploy auf Pages, Start auf dem Handy per LAN.
 2. [x] **Design-Grundlage:** Farb- und Schrift-Tokens hell/dunkel, Theme-Umschalter und Sprachwahl (gespeichert), App-Leiste. Theme und Sprache vorerst im Browser-Speicher (`src/geraet/speicher.ts`), Systemschrift statt eigener Schrift (offline, keine Abhängigkeit).
-3. [ ] **3D-Szene:** three.js-Szene aus dem Prototyp übernehmen (`src/szene/`), Outline-Linien in Theme-Farbe, Drehen und Zoomen, Modellteile mit festen IDs.
+3. [x] **3D-Szene:** three.js-Szene aus dem Prototyp übernehmen (`src/szene/`), Outline-Linien in Theme-Farbe, Drehen und Zoomen, Modellteile mit festen IDs. Modell in `src/szene/modell.ts` (24 Teile in 4 Gruppen), Szene in `src/szene/szene.ts`; Startabstand passt sich der Bildschirmform an.
 4. [ ] **Auswahl im Modell:** Bauteil wählen → Kameraflug, Rotfärbung, Rest blasser; Antippen im Modell; Logik für Kamerablickwinkel getestet.
 5. [ ] **Flyout:** Overlay mit Unschärfe, Tabs Bauteile und Diagnose, Suche, Gruppen; Bauteildetail mit Notizen-Platzhalter.
 6. [ ] **Datenbank:** Dexie-Schema oben, `persist()`, Zeitstempel und Soft-Delete als gemeinsame Hilfsfunktion, Tests mit `fake-indexeddb`.

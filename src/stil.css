@@ -143,17 +143,26 @@ button {
   letter-spacing: 0.06em;
 }
 
-/* Bühne: hier sitzt ab Schritt 3 das 3D-Modell. */
+/* Bühne: 3D-Modell über den ganzen Bildschirm, Leiste und Menü liegen darüber. */
 .buehne {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 0 var(--rand);
 }
-.hinweis {
-  max-width: 32rem;
+.leinwand {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+.bedienhinweis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  margin: 0;
+  padding: 0 var(--rand);
   text-align: center;
+  font-size: 12.5px;
   color: var(--gedaempft);
-  line-height: 1.5;
+  pointer-events: none;
 }

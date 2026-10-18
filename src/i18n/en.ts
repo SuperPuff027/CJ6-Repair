@@ -4,7 +4,8 @@ import type { Uebersetzung } from './de';
 export const en: Uebersetzung = {
   'app.titel': 'CJ6-Repair',
   'app.untertitel': 'Jeep CJ-6 · Model year {jahr}',
-  'start.hinweis': 'The 3D model of your CJ-6 will appear here soon.',
+  'buehne.modell': '3D model of the Jeep CJ-6',
+  'buehne.bedienhinweis': 'Drag to rotate · Pinch to zoom',
 
   'leiste.thema_hell': 'Switch to light mode',
   'leiste.thema_dunkel': 'Switch to dark mode',
