@@ -1,4 +1,5 @@
 import type { Sprache } from '../logic/sprache';
+import type { ModellGruppe, ModellTeilId } from '../szene/modell';
 import { de, type Schluessel, type Uebersetzung } from './de';
 import { en } from './en';
 
@@ -19,4 +20,13 @@ export function erstelleUebersetzer(sprache: Sprache): Uebersetzer {
       name in platzhalter ? String(platzhalter[name]) : roh,
     );
   };
+}
+
+/** Schlüssel für den Namen eines Modellteils; der Test sichert, dass es ihn in allen Sprachen gibt. */
+export function teilSchluessel(id: ModellTeilId): Schluessel {
+  return `teil.${id}` as Schluessel;
+}
+
+export function gruppenSchluessel(gruppe: ModellGruppe): Schluessel {
+  return `gruppe.${gruppe}` as Schluessel;
 }

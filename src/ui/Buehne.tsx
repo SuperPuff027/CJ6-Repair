@@ -1,24 +1,36 @@
 import { useEffect, useRef } from 'preact/hooks';
+import { teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
 import type { Thema } from '../logic/thema';
+import type { ModellTeilId } from '../szene/modell';
 import { erstelleSzene, type SzenenSteuerung } from '../szene/szene';
 
 function themaFarben() {
   const stil = getComputedStyle(document.documentElement);
-  return {
-    linie: stil.getPropertyValue('--line').trim(),
-    linieSchwach: stil.getPropertyValue('--line-schwach').trim(),
-  };
+  const token = (name: string) => stil.getPropertyValue(name).trim();
+  return { linie: token('--line'), linieSchwach: token('--line-schwach'), rot: token('--rot') };
 }
 
-export function Buehne(props: { thema: Thema }) {
+const KREUZ = (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
+
+export function Buehne(props: { thema: Thema; auswahl: ModellTeilId | null; waehle: (id: ModellTeilId | null) => void }) {
   const { t } = useSprache();
   const leinwand = useRef<HTMLCanvasElement>(null);
   const szene = useRef<SzenenSteuerung | null>(null);
+  // Die Szene wird nur einmal gebaut; der Rückruf soll trotzdem immer die aktuelle Funktion nutzen.
+  const waehleAktuell = useRef(props.waehle);
+  waehleAktuell.current = props.waehle;
 
   useEffect(() => {
     const bewegungReduziert = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const steuerung = erstelleSzene(leinwand.current!, { bewegungReduziert });
+    const steuerung = erstelleSzene(leinwand.current!, {
+      bewegungReduziert,
+      beiAntippen: (id) => waehleAktuell.current(id),
+    });
     szene.current = steuerung;
     steuerung.setzeFarben(themaFarben());
     return () => {
@@ -32,10 +44,26 @@ export function Buehne(props: { thema: Thema }) {
     szene.current?.setzeFarben(themaFarben());
   }, [props.thema]);
 
+  useEffect(() => {
+    szene.current?.waehle(props.auswahl);
+  }, [props.auswahl]);
+
   return (
     <main class="buehne">
       <canvas ref={leinwand} class="leinwand" aria-label={t('buehne.modell')} role="img" />
-      <p class="bedienhinweis">{t('buehne.bedienhinweis')}</p>
+      <div class="buehne-fuss">
+        {props.auswahl ? (
+          <div class="auswahl-chip">
+            <span class="auswahl-punkt" aria-hidden="true" />
+            <span class="auswahl-name">{t(teilSchluessel(props.auswahl))}</span>
+            <button class="auswahl-weg" onClick={() => props.waehle(null)} aria-label={t('auswahl.aufheben')}>
+              {KREUZ}
+            </button>
+          </div>
+        ) : (
+          <p class="bedienhinweis">{t('buehne.bedienhinweis')}</p>
+        )}
+      </div>
     </main>
   );
 }

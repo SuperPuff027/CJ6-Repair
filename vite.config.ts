@@ -46,6 +46,10 @@ export default defineConfig(({ mode }) => ({
       },
     }),
   ],
+  build: {
+    // three.js allein ist ~600 kB; wird ohnehin vollständig für den Offline-Start vorab gespeichert.
+    chunkSizeWarningLimit: 1000,
+  },
   test: {
     include: ['src/**/*.test.ts'],
     environment: 'node',

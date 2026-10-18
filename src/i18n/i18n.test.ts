@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { de } from './de';
 import { en } from './en';
-import { erstelleUebersetzer } from './index';
+import { MODELL_GRUPPEN, MODELL_TEIL_IDS } from '../szene/modell';
+import { erstelleUebersetzer, gruppenSchluessel, teilSchluessel } from './index';
 
 describe('Übersetzungen', () => {
   it('haben in allen Sprachen genau dieselben Schlüssel', () => {
@@ -33,5 +34,12 @@ describe('erstelleUebersetzer', () => {
     expect(t('app.untertitel', { jahr: 1974 })).toBe('Jeep CJ-6 · Baujahr 1974');
     expect(t('app.untertitel')).toBe('Jeep CJ-6 · Baujahr {jahr}');
     expect(t('app.untertitel', { x: 1 })).toBe('Jeep CJ-6 · Baujahr {jahr}');
+  });
+});
+
+describe('Namen der Modellteile', () => {
+  it('gibt es für jedes Teil und jede Gruppe', () => {
+    for (const id of MODELL_TEIL_IDS) expect(de, id).toHaveProperty([teilSchluessel(id)]);
+    for (const g of MODELL_GRUPPEN) expect(de, g).toHaveProperty([gruppenSchluessel(g)]);
   });
 });
