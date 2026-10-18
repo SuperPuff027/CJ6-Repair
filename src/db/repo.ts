@@ -24,8 +24,10 @@ export async function loescheWeich<T extends MitId>(tabelle: Table<T, string>, i
   });
 }
 
+/** Gespeichertes Fahrzeug; Felder, die es bei der Speicherung noch nicht gab, kommen aus dem Standard. */
 export async function ladeFahrzeug(): Promise<Fahrzeug> {
-  return (await db.fahrzeug.get(FAHRZEUG_ID)) ?? standardFahrzeug(new Date());
+  const gespeichert = await db.fahrzeug.get(FAHRZEUG_ID);
+  return { ...standardFahrzeug(new Date()), ...gespeichert };
 }
 
 export type FahrzeugAenderung = Partial<Omit<Fahrzeug, 'id' | 'aktualisiert_am' | 'geloescht'>>;

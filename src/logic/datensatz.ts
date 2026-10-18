@@ -34,6 +34,7 @@ export function standardFahrzeug(jetzt: Date): Fahrzeug {
     fahrzeugschein_angaben: null,
     motorcode: null,
     motor_variante_id: null,
+    motor_vorgemerkt: [],
     motor_bestaetigt_durch: null,
     getriebe: null,
     verteilergetriebe: null,

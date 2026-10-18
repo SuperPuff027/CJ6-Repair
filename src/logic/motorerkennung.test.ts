@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import startdaten from '../../public/startdaten/motoren-cj.json';
 import type { MotorVariante } from '../model/typen';
-import { bewerteMotoren, kannBestaetigen, motorcodeBuchstabe, vinMotorBuchstabe, type MotorAngaben } from './motorerkennung';
+import { bewerteMotoren, kannBestaetigen, motorcodeBuchstabe, vinMotorBuchstabe, vormerkenUmschalten, type MotorAngaben } from './motorerkennung';
 import { pruefeWissensbasis } from './wissensbasis';
 
 /** Die mitgelieferte Startdatei, so wie sie importiert würde. */
@@ -71,11 +71,31 @@ describe('bewerteMotoren', () => {
 
 describe('kannBestaetigen', () => {
   it('verlangt einen passenden Nachweis', () => {
-    const [mitCode] = bewerteMotoren(motoren(), { ...LEER, motorcode: '802E20' });
-    expect(kannBestaetigen(mitCode!, 'motorcode')).toBe(true);
-    expect(kannBestaetigen(mitCode!, 'vin')).toBe(false);
-    expect(kannBestaetigen(mitCode!, 'gussnummer')).toBe(true);
-    const ausgeschlossen = bewerteMotoren(motoren(), { ...LEER, motorcode: '802E20' }).find((b) => b.ausgeschlossen)!;
-    expect(kannBestaetigen(ausgeschlossen, 'gussnummer')).toBe(false);
+    const alle = bewerteMotoren(motoren(), { ...LEER, motorcode: '802E20' });
+    const [mitCode] = alle;
+    expect(kannBestaetigen(mitCode!, 'motorcode', alle)).toBe(true);
+    expect(kannBestaetigen(mitCode!, 'vin', alle)).toBe(false);
+    // Der 258 ist durch den Motorcode ausgeschlossen: die Gussnummer darf bestätigen.
+    expect(kannBestaetigen(mitCode!, 'gussnummer', alle)).toBe(true);
+    expect(kannBestaetigen(alle.find((b) => b.ausgeschlossen)!, 'gussnummer', alle)).toBe(false);
+  });
+
+  it('lässt die Gussnummer nicht gelten, solange ein baugleicher Motor möglich ist', () => {
+    const alle = bewerteMotoren(motoren(), { ...LEER, zylinder: 6 });
+    const amc232 = alle.find((b) => b.variante.id === 'amc-232')!;
+    const dauntless = alle.find((b) => b.variante.id === 'buick-dauntless-225')!;
+    expect(kannBestaetigen(amc232, 'gussnummer', alle)).toBe(false); // AMC 258 hat denselben Block
+    expect(kannBestaetigen(dauntless, 'gussnummer', alle)).toBe(true); // einziger V6
+  });
+});
+
+describe('vormerkenUmschalten', () => {
+  it('fügt hinzu und nimmt wieder heraus, ohne die Liste zu verändern', () => {
+    const leer: string[] = [];
+    const eins = vormerkenUmschalten(leer, 'amc-232');
+    expect(eins).toEqual(['amc-232']);
+    expect(vormerkenUmschalten(eins, 'amc-258')).toEqual(['amc-232', 'amc-258']);
+    expect(vormerkenUmschalten(eins, 'amc-232')).toEqual([]);
+    expect(leer).toEqual([]);
   });
 });

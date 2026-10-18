@@ -54,6 +54,8 @@ export interface Fahrzeug extends MitId {
   motorcode: string | null;
   /** null, bis der Motor bestätigt ist */
   motor_variante_id: string | null;
+  /** Vorgemerkte Motorvarianten, solange der Motor nicht bestätigt ist (z. B. AMC 232 und 258) */
+  motor_vorgemerkt: string[];
   motor_bestaetigt_durch: MotorBestaetigung | null;
   getriebe: string | null;
   verteilergetriebe: string | null;

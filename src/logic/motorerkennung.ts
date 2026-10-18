@@ -134,12 +134,32 @@ export function bewerteMotoren(varianten: readonly MotorVariante[], angaben: Mot
 }
 
 /**
- * Das Profil wird erst fixiert, wenn ein Nachweis vorliegt (CLAUDE.md, Fachliche Regeln):
- * Motorcode oder Fahrgestellnummer müssen zur Variante passen; eine Gussnummer prüft der Nutzer selbst.
+ * Noch mögliche Varianten derselben Bauart und Zylinderzahl (z. B. AMC 232 und 258 mit gemeinsamem Block).
+ * Solange es solche gibt, beweist eine Gussnummer nichts.
  */
-export function kannBestaetigen(bewertung: Bewertung, durch: MotorBestaetigung): boolean {
+export function baugleicheMoeglich(bewertung: Bewertung, alle: readonly Bewertung[]): boolean {
+  return alle.some(
+    (b) =>
+      b !== bewertung &&
+      !b.ausgeschlossen &&
+      b.variante.zylinder === bewertung.variante.zylinder &&
+      b.variante.bauart === bewertung.variante.bauart,
+  );
+}
+
+/**
+ * Das Profil wird erst fixiert, wenn ein Nachweis vorliegt (CLAUDE.md, Fachliche Regeln):
+ * Motorcode oder Fahrgestellnummer müssen zur Variante passen; eine Gussnummer prüft der Nutzer selbst,
+ * sie zählt aber nur, wenn kein baugleicher Motor mehr in Frage kommt.
+ */
+export function kannBestaetigen(bewertung: Bewertung, durch: MotorBestaetigung, alle: readonly Bewertung[]): boolean {
   if (bewertung.ausgeschlossen) return false;
   if (durch === 'motorcode') return bewertung.gruende.some((g) => g.code === 'motorcode_passt');
   if (durch === 'vin') return bewertung.gruende.some((g) => g.code === 'vin_passt');
-  return true;
+  return !baugleicheMoeglich(bewertung, alle);
+}
+
+/** Merkt eine Variante vor oder nimmt sie wieder heraus. */
+export function vormerkenUmschalten(vorgemerkt: readonly string[], id: string): string[] {
+  return vorgemerkt.includes(id) ? vorgemerkt.filter((v) => v !== id) : [...vorgemerkt, id];
 }

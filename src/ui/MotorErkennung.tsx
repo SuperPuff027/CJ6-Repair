@@ -6,7 +6,7 @@ import type { Schluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
 import { hubraumLiter, textFeld } from '../logic/fahrzeug';
 import { formatiereZahl } from '../logic/format';
-import { bewerteMotoren, kannBestaetigen, type Bewertung } from '../logic/motorerkennung';
+import { baugleicheMoeglich, bewerteMotoren, kannBestaetigen, vormerkenUmschalten, type Bewertung } from '../logic/motorerkennung';
 import type { Fahrzeug, MotorBestaetigung, MotorVariante } from '../model/typen';
 import { FotoAblage } from './FotoAblage';
 
@@ -33,6 +33,7 @@ export function MotorErkennung(props: { fahrzeug: Fahrzeug; aendere: (aenderung:
   }, []);
 
   const bestaetigt = varianten?.find((v) => v.id === fahrzeug.motor_variante_id);
+  const vorgemerkt = (varianten ?? []).filter((v) => fahrzeug.motor_vorgemerkt.includes(v.id));
 
   const startdatenLaden = async () => {
     setzeLadeFehler(false);
@@ -68,7 +69,9 @@ export function MotorErkennung(props: { fahrzeug: Fahrzeug; aendere: (aenderung:
       <p class={bestaetigt ? 'motor-status bestaetigt' : 'feld-hinweis'}>
         {bestaetigt && fahrzeug.motor_bestaetigt_durch
           ? t('motor.bestaetigt', { name: bestaetigt.name, nachweis: t(`nachweis.${fahrzeug.motor_bestaetigt_durch}`) })
-          : t('motor.nicht_bestaetigt')}
+          : vorgemerkt.length > 0
+            ? t('motor.vorgemerkt', { namen: vorgemerkt.map((v) => v.name).join(', ') })
+            : t('motor.nicht_bestaetigt')}
       </p>
       {!offen && (
         <button class="rand-knopf" onClick={() => setzeOffen(true)}>
@@ -184,14 +187,24 @@ export function MotorErkennung(props: { fahrzeug: Fahrzeug; aendere: (aenderung:
                         </a>
                       ))}
                     </p>
+                    <label class="haken">
+                      <input
+                        id={`vormerken-${b.variante.id}`}
+                        type="checkbox"
+                        checked={fahrzeug.motor_vorgemerkt.includes(b.variante.id)}
+                        onChange={() => props.aendere({ motor_vorgemerkt: vormerkenUmschalten(fahrzeug.motor_vorgemerkt, b.variante.id) })}
+                      />
+                      {t('motor.vormerken')}
+                    </label>
                     <p class="feld-hinweis">{t('motor.bestaetigen_per')}</p>
                     <div class="knopf-reihe">
                       {NACHWEISE.map((n) => (
-                        <button key={n} class="rand-knopf" disabled={!kannBestaetigen(b, n)} onClick={() => bestaetige(b, n)}>
+                        <button key={n} class="rand-knopf" disabled={!kannBestaetigen(b, n, bewertungen)} onClick={() => bestaetige(b, n)}>
                           {t(`nachweis.${n}`)}
                         </button>
                       ))}
                     </div>
+                    {baugleicheMoeglich(b, bewertungen) && <p class="feld-hinweis">{t('motor.guss_gesperrt')}</p>}
                   </li>
                 ))}
               </ul>
