@@ -32,6 +32,7 @@ export function standardFahrzeug(jetzt: Date): Fahrzeug {
     baujahr: 1974,
     vin: null,
     fahrzeugschein_angaben: null,
+    motorcode: null,
     motor_variante_id: null,
     motor_bestaetigt_durch: null,
     getriebe: null,

@@ -9,7 +9,8 @@ Die echte Datei liegt im privaten Ordner `wissensbasis/` und kommt nie ins Repo.
 - **Jede Teilenummer und jeder Sollwert braucht eine Quelle**: `{ "dokument": "...", "stelle": "S. 123" }`. Ohne Quelle lehnt die App die ganze Datei ab.
 - Eine Anleitung mit `"geprueft": true` braucht ebenfalls eine Quelle. Ungeprüfte Anleitungen zeigt die App deutlich als ungeprüft.
 - **IDs vergibst du selbst** (z. B. `"bremstrommel-vorn"`). Sie müssen pro Liste eindeutig sein und dürfen sich später nicht ändern: Beim erneuten Import werden Einträge mit gleicher ID aktualisiert.
-- **Die Datei ersetzt die Wissensbasis.** Einträge, die in einer neuen Datei fehlen, werden entfernt (weich gelöscht; eigene Notizen, Fotos und Aufgaben bleiben erhalten). Unveränderte Einträge bleiben unberührt.
+- **Jede Liste in der Datei ersetzt die gleichnamige Liste in der App.** Einträge, die darin fehlen, werden entfernt (weich gelöscht; eigene Notizen, Fotos und Aufgaben bleiben erhalten). Unveränderte Einträge bleiben unberührt. **Listen, die in der Datei gar nicht vorkommen, bleiben unverändert** – eine Datei nur mit `motor_varianten` ändert also nichts an Bauteilen oder Anleitungen.
+- Verweise (`baugruppe_id`, `bauteil_id` usw.) müssen innerhalb derselben Datei aufgehen.
 - Vor dem Import zeigt die App, was neu, geändert und entfernt wird. Erst nach „Importieren“ wird gespeichert, und zwar ganz oder gar nicht.
 
 ## Aufbau
@@ -26,7 +27,7 @@ Die echte Datei liegt im privaten Ordner `wissensbasis/` und kommt nie ins Repo.
 }
 ```
 
-Alle Listen sind optional. Felder mit `?` sind optional.
+Alle Listen sind optional (siehe oben: fehlende Listen bleiben unverändert). Felder mit `?` sind optional.
 
 ### motor_varianten
 
@@ -37,8 +38,11 @@ Alle Listen sind optional. Felder mit `?` sind optional.
 | `zylinder` | Zahl | |
 | `hubraum_l` | Zahl | Liter |
 | `bauart` | Text | z. B. „Reihensechser“ |
-| `baujahre` | Text | z. B. „1972–1979“ |
+| `baujahr_von?`, `baujahr_bis?` | Zahl | Baujahre im CJ; weglassen, wenn nicht belegt |
+| `motorcode_buchstaben?` | Liste von Großbuchstaben | 4. Zeichen des am Block eingeschlagenen Codes, z. B. `E` in „802E20“ |
+| `vin_buchstaben?` | Liste von Großbuchstaben | 8. Zeichen der Fahrgestellnummer (Schema 1971–1974) |
 | `erkennungsmerkmale?` | Liste von Text | woran man den Motor erkennt |
+| `quelle` | Quelle | Pflicht |
 
 ### baugruppen
 

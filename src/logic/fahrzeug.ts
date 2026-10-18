@@ -42,3 +42,15 @@ export function sortiereUmbauten(umbauten: readonly Umbau[]): Umbau[] {
     return b.aktualisiert_am.localeCompare(a.aktualisiert_am);
   });
 }
+
+/**
+ * Hubraum in Litern aus einer Eingabe wie „3,8“, „3.8 l“ oder „1600 cm³“.
+ * Zahlen über 100 gelten als cm³ (so steht es in den meisten Fahrzeugpapieren).
+ */
+export function hubraumLiter(eingabe: string): number | null {
+  const treffer = eingabe.replace(',', '.').match(/\d+(\.\d+)?/);
+  if (!treffer) return null;
+  const zahl = Number(treffer[0]);
+  if (!Number.isFinite(zahl) || zahl <= 0) return null;
+  return zahl > 100 ? zahl / 1000 : zahl;
+}

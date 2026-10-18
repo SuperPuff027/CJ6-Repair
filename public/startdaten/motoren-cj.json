@@ -1,0 +1,96 @@
+{
+  "format": "cj6-wissensbasis",
+  "version": 1,
+  "motor_varianten": [
+    {
+      "id": "willys-hurricane-134",
+      "name": "Willys Hurricane F-Head 134",
+      "zylinder": 4,
+      "hubraum_l": 2.2,
+      "bauart": "Reihenvierzylinder mit F-Kopf",
+      "baujahr_bis": 1971,
+      "erkennungsmerkmale": [
+        "F-Kopf: Einlassventile im Zylinderkopf, Auslassventile im Block",
+        "Serienmotor im CJ-5 und CJ-6 von deren Einführung bis 1971"
+      ],
+      "quelle": {
+        "dokument": "JeepTech: Hurricane F-Head 134 I4",
+        "stelle": "https://jeepfan.com/tech/jeeptech/engine-factory-willys134i4fhead.htm"
+      }
+    },
+    {
+      "id": "buick-dauntless-225",
+      "name": "Buick Dauntless 225 V6",
+      "zylinder": 6,
+      "hubraum_l": 3.68,
+      "bauart": "V6",
+      "baujahr_von": 1966,
+      "baujahr_bis": 1971,
+      "erkennungsmerkmale": [
+        "V6 mit Buick-Getriebeglocke und Doppelvergaser",
+        "Wahlmotor im CJ-5 und CJ-6 von 1966 bis 1971"
+      ],
+      "quelle": {
+        "dokument": "JeepTech: Buick 225 V6 und Buick-V6-Umbau",
+        "stelle": "https://offroaders.com/tech/jeep/gnu-engine-factory-buick225v6.htm, https://offroaders.com/tech/jeep/gnu-engine-conversion-buickv6.htm"
+      }
+    },
+    {
+      "id": "amc-232",
+      "name": "AMC 232",
+      "zylinder": 6,
+      "hubraum_l": 3.8,
+      "bauart": "Reihensechszylinder",
+      "baujahr_von": 1972,
+      "baujahr_bis": 1978,
+      "motorcode_buchstaben": ["E", "F"],
+      "vin_buchstaben": ["E", "F"],
+      "erkennungsmerkmale": [
+        "Motorcode am Block zwischen und unter Zündkerze 2 und 3; das 4. Zeichen ist E oder F",
+        "Serienmotor im CJ von 1972 bis 1978",
+        "Teilt sich ab 1971 den Block mit dem AMC 258; von außen kaum zu unterscheiden, entscheidend ist der Motorcode"
+      ],
+      "quelle": {
+        "dokument": "JeepTech: AMC 232 I6; VIN-Tabelle CJ 1971–1974",
+        "stelle": "https://www.jeepfan.com/tech/jeeptech/engine-factory-amc232i6.htm, https://israeljeeps.co.il/?p=2127"
+      }
+    },
+    {
+      "id": "amc-258",
+      "name": "AMC 258",
+      "zylinder": 6,
+      "hubraum_l": 4.2,
+      "bauart": "Reihensechszylinder",
+      "baujahr_von": 1972,
+      "baujahr_bis": 1986,
+      "motorcode_buchstaben": ["A", "B", "C", "M"],
+      "vin_buchstaben": ["A", "B"],
+      "erkennungsmerkmale": [
+        "Motorcode am Block zwischen und unter Zündkerze 2 und 3; das 4. Zeichen ist A, B, C oder M",
+        "Im Grunde ein AMC 232 mit längerem Hub"
+      ],
+      "quelle": {
+        "dokument": "JeepTech: AMC 258 I6; VIN-Tabelle CJ 1971–1974",
+        "stelle": "https://www.jeepfan.com/tech/jeeptech/engine-factory-amc258i6.htm, https://israeljeeps.co.il/?p=2127"
+      }
+    },
+    {
+      "id": "amc-304",
+      "name": "AMC 304 V8",
+      "zylinder": 8,
+      "hubraum_l": 4.98,
+      "bauart": "V8",
+      "baujahr_von": 1972,
+      "baujahr_bis": 1981,
+      "vin_buchstaben": ["H"],
+      "erkennungsmerkmale": [
+        "Hubraumangabe seitlich am Block nahe der Motorhalterung eingegossen",
+        "Wahlmotor im CJ von 1972 bis 1981"
+      ],
+      "quelle": {
+        "dokument": "JeepTech: AMC 304 V8; Jeepfan: CJ engines; VIN-Tabelle CJ 1971–1974",
+        "stelle": "https://jeepfan.com/tech/jeeptech/gnu-engine-factory-amc304v8.htm, https://www.jeepfan.com/blog/cj-engines, https://israeljeeps.co.il/?p=2127"
+      }
+    }
+  ]
+}

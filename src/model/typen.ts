@@ -50,6 +50,8 @@ export interface Fahrzeug extends MitId {
   vin: string | null;
   /** Freitext aus dem Fahrzeugschein (z. B. Hubraum, Leistung) */
   fahrzeugschein_angaben: string | null;
+  /** Am Block eingeschlagener Motorcode, z. B. „802E20“ */
+  motorcode: string | null;
   /** null, bis der Motor bestätigt ist */
   motor_variante_id: string | null;
   motor_bestaetigt_durch: MotorBestaetigung | null;
@@ -81,9 +83,15 @@ export interface MotorVariante extends MitId {
   zylinder: number;
   hubraum_l: number;
   bauart: string;
-  /** z. B. „1972–1979“ */
-  baujahre: string;
+  /** Baujahre im CJ; null = nicht belegt */
+  baujahr_von: number | null;
+  baujahr_bis: number | null;
+  /** 4. Zeichen des eingeschlagenen Motorcodes (z. B. „E“ in 802E20); leer = nicht belegt */
+  motorcode_buchstaben: string[];
+  /** 8. Zeichen der Fahrgestellnummer 1971–1974; leer = nicht belegt */
+  vin_buchstaben: string[];
   erkennungsmerkmale: string[];
+  quelle: Quelle;
 }
 
 export interface Baugruppe extends MitId {

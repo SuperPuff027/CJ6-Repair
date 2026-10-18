@@ -116,3 +116,34 @@ describe('planeImport', () => {
     expect(planeImport(bestand, gueltig(beispiel), JETZT).zusammenfassung.bauteile.neu).toBe(1);
   });
 });
+
+describe('Motorvarianten', () => {
+  it('verlangen eine Quelle und Großbuchstaben als Kennbuchstaben', () => {
+    const d = kopie();
+    delete (d.motor_varianten[0] as { quelle?: unknown }).quelle;
+    (d.motor_varianten[0] as { motorcode_buchstaben: unknown[] }).motorcode_buchstaben = ['e', 'EF'];
+    expect(codes(d)).toEqual([
+      'falscher_typ motor_varianten[0].motorcode_buchstaben[0]',
+      'falscher_typ motor_varianten[0].motorcode_buchstaben[1]',
+      'quelle_fehlt motor_varianten[0].quelle',
+    ]);
+  });
+});
+
+describe('Teil-Import', () => {
+  it('lässt Listen unverändert, die in der Datei nicht vorkommen', () => {
+    const bestand = planeImport(leererBestand(), gueltig(beispiel), new Date(FRUEHER)).schreiben;
+    const nurMotoren = gueltig({ format: 'cj6-wissensbasis', version: 1, motor_varianten: beispiel.motor_varianten });
+    expect(nurMotoren.enthalten).toEqual(['motor_varianten']);
+    const plan = planeImport(bestand, nurMotoren, JETZT);
+    expect(plan.zusammenfassung.bauteile).toEqual({ neu: 0, geaendert: 0, entfernt: 0, unveraendert: 0 });
+    expect(plan.schreiben.bauteile).toEqual([]);
+    expect(plan.zusammenfassung.motor_varianten).toEqual({ neu: 0, geaendert: 0, entfernt: 0, unveraendert: 1 });
+  });
+
+  it('leert eine Liste, die ausdrücklich leer in der Datei steht', () => {
+    const bestand = planeImport(leererBestand(), gueltig(beispiel), new Date(FRUEHER)).schreiben;
+    const plan = planeImport(bestand, gueltig({ format: 'cj6-wissensbasis', version: 1, symptom_knoten: [] }), JETZT);
+    expect(plan.zusammenfassung.symptom_knoten.entfernt).toBe(1);
+  });
+});

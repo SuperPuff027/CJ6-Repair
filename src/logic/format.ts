@@ -10,3 +10,8 @@ export function formatiereDatum(datum: string, sprache: Sprache): string {
     new Date(jahr, monat - 1, tag),
   );
 }
+
+/** Zahl in der Schreibweise der Sprache, z. B. 3,8 oder 3.8. */
+export function formatiereZahl(zahl: number, sprache: Sprache, nachkommastellen = 2): string {
+  return new Intl.NumberFormat(GEBIETSSCHEMA[sprache], { maximumFractionDigits: nachkommastellen }).format(zahl);
+}

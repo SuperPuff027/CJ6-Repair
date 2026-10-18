@@ -1,6 +1,6 @@
 import type { Table } from 'dexie';
 import { nurAktive } from '../logic/datensatz';
-import { planeImport, WISSENSBASIS_TABELLEN, type ImportPlan, type Wissensbasis, type WissensbasisTabelle } from '../logic/wissensbasis';
+import { leseWissensbasis, planeImport, WISSENSBASIS_TABELLEN, type ImportPlan, type Wissensbasis, type WissensbasisTabelle } from '../logic/wissensbasis';
 import type { MitId } from '../model/typen';
 import { db } from './datenbank';
 
@@ -35,4 +35,13 @@ export interface WissensbasisUmfang {
 export async function zaehleWissensbasis(): Promise<WissensbasisUmfang> {
   const [bauteile, anleitungen, symptome] = await Promise.all([db.bauteile.toArray(), db.anleitungen.toArray(), db.symptom_knoten.toArray()]);
   return { bauteile: nurAktive(bauteile).length, anleitungen: nurAktive(anleitungen).length, symptome: nurAktive(symptome).length };
+}
+
+/** Lädt die mitgelieferten Motordaten (public/startdaten) und importiert nur die Motorvarianten. */
+export async function importiereMotorStartdaten(): Promise<void> {
+  const antwort = await fetch(`${import.meta.env.BASE_URL}startdaten/motoren-cj.json`);
+  if (!antwort.ok) throw new Error(`Startdaten: HTTP ${antwort.status}`);
+  const ergebnis = leseWissensbasis(await antwort.text());
+  if (!ergebnis.ok) throw new Error(`Startdaten ungültig: ${JSON.stringify(ergebnis.fehler)}`);
+  await fuehreWissensbasisImportAus(await planeWissensbasisImport(ergebnis.daten));
 }

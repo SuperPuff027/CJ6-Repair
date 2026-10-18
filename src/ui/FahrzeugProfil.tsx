@@ -8,6 +8,7 @@ import { GAS_TEXTFELDER, jahrFeld, leereGasanlage, textFeld, vinFeld } from '../
 import { formatiereDatum } from '../logic/format';
 import type { Fahrzeug, Gasanlage, Kraftstoff, Umbau } from '../model/typen';
 import { MODELL_TEIL_IDS, type ModellTeilId } from '../szene/modell';
+import { MotorErkennung } from './MotorErkennung';
 
 const MELDUNG_DAUER_MS = 2500;
 
@@ -130,10 +131,7 @@ export function FahrzeugProfil() {
           wert={fahrzeug.fahrzeugschein_angaben}
           speichern={(w) => aendere({ fahrzeugschein_angaben: w as string | null })}
         />
-        <div class="feld">
-          <span class="feld-label">{t('profil.motor')}</span>
-          <p class="feld-hinweis">{t('profil.motor_offen')}</p>
-        </div>
+        <MotorErkennung fahrzeug={fahrzeug} aendere={aendere} />
       </section>
 
       <section class="profil-abschnitt">

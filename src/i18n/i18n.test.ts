@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { de } from './de';
 import { en } from './en';
+import { GRUND_CODES } from '../logic/motorerkennung';
 import { FEHLER_CODES, WISSENSBASIS_TABELLEN } from '../logic/wissensbasis';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS } from '../szene/modell';
 import { erstelleUebersetzer, gruppenSchluessel, pruefSchluessel, tabellenSchluessel, teilSchluessel } from './index';
@@ -49,5 +50,11 @@ describe('Texte zum Wissensbasis-Import', () => {
   it('gibt es für jeden Prüffehler und jede Tabelle', () => {
     for (const code of FEHLER_CODES) expect(de, code).toHaveProperty([pruefSchluessel(code)]);
     for (const tabelle of WISSENSBASIS_TABELLEN) expect(de, tabelle).toHaveProperty([tabellenSchluessel(tabelle)]);
+  });
+});
+
+describe('Texte zur Motorerkennung', () => {
+  it('gibt es für jeden Grund', () => {
+    for (const code of GRUND_CODES) expect(de, code).toHaveProperty([`grund.${code}`]);
   });
 });

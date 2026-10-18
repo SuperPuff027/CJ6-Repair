@@ -24,6 +24,8 @@ export type WissensbasisTabelle = (typeof WISSENSBASIS_TABELLEN)[number];
 type OhneSync<T> = Omit<T, 'aktualisiert_am' | 'geloescht'>;
 
 export interface Wissensbasis {
+  /** Listen, die in der Datei stehen; nur diese werden ersetzt. */
+  enthalten: WissensbasisTabelle[];
   motor_varianten: OhneSync<MotorVariante>[];
   baugruppen: OhneSync<Baugruppe>[];
   bauteile: OhneSync<Bauteil>[];
@@ -100,6 +102,23 @@ class Leser {
     return 0;
   }
 
+  zahlOderNull(o: Objekt, feld: string, pfad: string): number | null {
+    const wert = o[feld];
+    if (wert === undefined || wert === null) return null;
+    if (typeof wert === 'number' && Number.isFinite(wert)) return wert;
+    this.melde('falscher_typ', `${pfad}.${feld}`);
+    return null;
+  }
+
+  /** Liste einzelner Großbuchstaben, z. B. Kennbuchstaben von Motorcodes. */
+  buchstaben(o: Objekt, feld: string, pfad: string): string[] {
+    return this.texte(o, feld, pfad).flatMap((b, i) => {
+      if (/^[A-Z]$/.test(b)) return [b];
+      this.melde('falscher_typ', `${pfad}.${feld}[${i}]`);
+      return [];
+    });
+  }
+
   wahrheitswert(o: Objekt, feld: string, pfad: string): boolean {
     const wert = o[feld];
     if (typeof wert === 'boolean') return wert;
@@ -153,17 +172,21 @@ export function pruefeWissensbasis(roh: unknown): PruefErgebnis {
     const p = `motor_varianten[${i}]`;
     const o = l.objekt(w, p);
     if (!o) return [];
-    return [
-      {
-        id: l.text(o, 'id', p),
-        name: l.text(o, 'name', p),
-        zylinder: l.zahl(o, 'zylinder', p),
-        hubraum_l: l.zahl(o, 'hubraum_l', p),
-        bauart: l.text(o, 'bauart', p),
-        baujahre: l.text(o, 'baujahre', p),
-        erkennungsmerkmale: l.texte(o, 'erkennungsmerkmale', p),
-      },
-    ];
+    const motor = {
+      id: l.text(o, 'id', p),
+      name: l.text(o, 'name', p),
+      zylinder: l.zahl(o, 'zylinder', p),
+      hubraum_l: l.zahl(o, 'hubraum_l', p),
+      bauart: l.text(o, 'bauart', p),
+      baujahr_von: l.zahlOderNull(o, 'baujahr_von', p),
+      baujahr_bis: l.zahlOderNull(o, 'baujahr_bis', p),
+      motorcode_buchstaben: l.buchstaben(o, 'motorcode_buchstaben', p),
+      vin_buchstaben: l.buchstaben(o, 'vin_buchstaben', p),
+      erkennungsmerkmale: l.texte(o, 'erkennungsmerkmale', p),
+    };
+    // Motordaten sind technische Angaben und brauchen eine Quelle.
+    const quelle = l.quelle(o, 'quelle', p, true);
+    return quelle ? [{ ...motor, quelle }] : [];
   });
 
   const baugruppen = l.liste(wurzel, 'baugruppen', '', false).flatMap((w, i) => {
@@ -258,7 +281,8 @@ export function pruefeWissensbasis(roh: unknown): PruefErgebnis {
     return [{ id: l.text(o, 'id', p), frage: l.text(o, 'frage', p), antworten }];
   });
 
-  const daten: Wissensbasis = { motor_varianten, baugruppen, bauteile, anleitungen, symptom_knoten };
+  const enthalten = WISSENSBASIS_TABELLEN.filter((t) => wurzel[t] !== undefined);
+  const daten: Wissensbasis = { enthalten, motor_varianten, baugruppen, bauteile, anleitungen, symptom_knoten };
   pruefeVerweise(daten, l);
   return l.fehler.length ? { ok: false, fehler: l.fehler } : { ok: true, daten };
 }
@@ -354,8 +378,9 @@ function inhalt(datensatz: MitId): string {
 }
 
 /**
- * Die Datei ersetzt die Wissensbasis: neue und geänderte Einträge werden geschrieben, unveränderte
- * behalten ihren Zeitstempel, Einträge, die in der Datei fehlen, werden weich gelöscht.
+ * Jede Liste der Datei ersetzt die gleichnamige Liste der Wissensbasis: neue und geänderte Einträge
+ * werden geschrieben, unveränderte behalten ihren Zeitstempel, fehlende werden weich gelöscht.
+ * Listen, die in der Datei gar nicht vorkommen, bleiben unverändert.
  */
 export function planeImport(bestand: Record<WissensbasisTabelle, readonly MitId[]>, daten: Wissensbasis, jetzt: Date): ImportPlan {
   const zeit = jetzt.toISOString();
@@ -366,6 +391,11 @@ export function planeImport(bestand: Record<WissensbasisTabelle, readonly MitId[
     const vorhanden = new Map(bestand[tabelle].map((d) => [d.id, d]));
     const aenderung: TabellenAenderung = { neu: 0, geaendert: 0, entfernt: 0, unveraendert: 0 };
     const liste: MitId[] = [];
+    if (!daten.enthalten.includes(tabelle)) {
+      schreiben[tabelle] = liste;
+      zusammenfassung[tabelle] = aenderung;
+      continue;
+    }
     const inDatei = new Set<string>();
 
     for (const eintrag of daten[tabelle] as { id: string }[]) {

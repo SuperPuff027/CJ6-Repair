@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         // App-Hülle vollständig vorab speichern, damit sie ohne Netz startet.
-        globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,png,svg,woff2,json}'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
       },

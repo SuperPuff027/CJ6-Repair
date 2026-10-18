@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Umbau } from '../model/typen';
-import { jahrFeld, sortiereUmbauten, textFeld, vinFeld } from './fahrzeug';
+import { hubraumLiter, jahrFeld, sortiereUmbauten, textFeld, vinFeld } from './fahrzeug';
 
 const JETZT = new Date('2026-10-18T12:00:00Z');
 
@@ -53,5 +53,20 @@ describe('sortiereUmbauten', () => {
       umbau('2023', '2023-07-15', '2026-01-01'),
     ]);
     expect(sortiert.map((u) => u.id)).toEqual(['2023', '2019', 'ohne-neu', 'ohne-alt']);
+  });
+});
+
+describe('hubraumLiter', () => {
+  it('liest Liter und cm³', () => {
+    expect(hubraumLiter('3,8')).toBe(3.8);
+    expect(hubraumLiter('3.8 l')).toBe(3.8);
+    expect(hubraumLiter('1600 cm³')).toBe(1.6);
+    expect(hubraumLiter('4229')).toBe(4.229);
+  });
+
+  it('liefert null ohne Zahl', () => {
+    expect(hubraumLiter('')).toBeNull();
+    expect(hubraumLiter('unbekannt')).toBeNull();
+    expect(hubraumLiter('0')).toBeNull();
   });
 });

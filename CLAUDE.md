@@ -23,6 +23,7 @@ Projekt-Brief (Funktionsumfang, Ausbaustufen, Wartungsintervalle, Risiken): Clau
 ## Private Daten
 - `wissensbasis/` (digitalisierte Handbücher, Teilekataloge, Explosionszeichnungen) ist privat und nie im Repo. Inhalte daraus nicht in Code, Tests oder Commits übernehmen; Tests, die sie brauchen, überspringen sich, wenn der Ordner fehlt.
 - Tests nutzen ausgedachte Beispieldaten, klar als Beispiel benannt.
+- Ausnahme: `public/startdaten/` enthält öffentlich belegte Angaben (z. B. Motorvarianten) mit Quelle je Eintrag; die App lädt sie auf Wunsch. Nur Angaben aufnehmen, deren Quellseite tatsächlich gelesen wurde.
 
 ## Stack (festgelegt)
 - Vite + TypeScript (strict), `vite-plugin-pwa` (Service Worker, installierbar)

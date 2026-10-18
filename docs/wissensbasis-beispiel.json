@@ -8,8 +8,12 @@
       "zylinder": 6,
       "hubraum_l": 1,
       "bauart": "BEISPIEL",
-      "baujahre": "BEISPIEL",
-      "erkennungsmerkmale": ["BEISPIEL: Motorcode auf dem Typenschild"]
+      "baujahr_von": 1900,
+      "baujahr_bis": 1901,
+      "motorcode_buchstaben": ["X"],
+      "vin_buchstaben": ["X"],
+      "erkennungsmerkmale": ["BEISPIEL: Motorcode auf dem Typenschild"],
+      "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" }
     }
   ],
   "baugruppen": [

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatiereDatum } from './format';
+import { formatiereDatum, formatiereZahl } from './format';
 
 describe('formatiereDatum', () => {
   it('schreibt das Datum je Sprache', () => {
@@ -9,5 +9,12 @@ describe('formatiereDatum', () => {
 
   it('lässt Unlesbares unverändert', () => {
     expect(formatiereDatum('irgendwann', 'de')).toBe('irgendwann');
+  });
+});
+
+describe('formatiereZahl', () => {
+  it('nutzt das Dezimalzeichen der Sprache', () => {
+    expect(formatiereZahl(3.8, 'de')).toBe('3,8');
+    expect(formatiereZahl(4.98, 'en')).toBe('4.98');
   });
 });
