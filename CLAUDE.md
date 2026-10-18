@@ -29,7 +29,7 @@ Projekt-Brief (Funktionsumfang, Ausbaustufen, Wartungsintervalle, Risiken): Clau
 - three.js für das 3D-Outline-Modell
 - Preact für Flyout, Formulare und Listen; die 3D-Szene bleibt imperativ (`src/szene/`)
 - Dexie (IndexedDB) für lokale Daten inkl. Fotos als Blobs; beim Start `navigator.storage.persist()` anfordern
-- Vitest für Tests
+- Vitest für Tests; `fake-indexeddb` (nur Entwicklung) für Datenbank-Tests
 - `npm run check` = Typecheck + Lint + Tests
 - Zielgeräte: Android Chrome und Desktop-Browser. Web-Bluetooth (V3) ist damit möglich.
 

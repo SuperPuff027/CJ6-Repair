@@ -1,0 +1,42 @@
+import type { Table } from 'dexie';
+import { alsGeloescht, geaendert, nurAktive, standardFahrzeug } from '../logic/datensatz';
+import { FAHRZEUG_ID, type BezugArt, type Fahrzeug, type Foto, type MitId, type Notiz } from '../model/typen';
+import { db } from './datenbank';
+
+// Alle Schreibzugriffe laufen über diese Funktionen, damit aktualisiert_am
+// immer gesetzt wird und nie hart gelöscht wird.
+
+export async function ladeAktive<T extends MitId>(tabelle: Table<T, string>): Promise<T[]> {
+  return nurAktive(await tabelle.toArray());
+}
+
+export async function speichere<T extends MitId>(tabelle: Table<T, string>, datensatz: T): Promise<T> {
+  const neu = geaendert(datensatz, new Date());
+  await tabelle.put(neu);
+  return neu;
+}
+
+export async function loescheWeich<T extends MitId>(tabelle: Table<T, string>, id: string): Promise<void> {
+  await db.transaction('rw', tabelle, async () => {
+    const vorhanden = await tabelle.get(id);
+    if (vorhanden && !vorhanden.geloescht) await tabelle.put(alsGeloescht(vorhanden, new Date()));
+  });
+}
+
+export async function ladeFahrzeug(): Promise<Fahrzeug> {
+  return (await db.fahrzeug.get(FAHRZEUG_ID)) ?? standardFahrzeug(new Date());
+}
+
+/** Aktive Notizen oder Fotos zu einem Bezug, älteste zuerst. */
+async function ladeZuBezug<T extends Notiz | Foto>(tabelle: Table<T, string>, art: BezugArt, id: string): Promise<T[]> {
+  const treffer = await tabelle.where('[bezug_art+bezug_id]').equals([art, id]).toArray();
+  return nurAktive(treffer).sort((a, b) => a.aktualisiert_am.localeCompare(b.aktualisiert_am));
+}
+
+export function ladeNotizen(art: BezugArt, id: string): Promise<Notiz[]> {
+  return ladeZuBezug(db.notizen, art, id);
+}
+
+export function ladeFotos(art: BezugArt, id: string): Promise<Foto[]> {
+  return ladeZuBezug(db.fotos, art, id);
+}
