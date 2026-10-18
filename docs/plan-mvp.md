@@ -17,7 +17,7 @@ Ziel laut Brief: Die erste echte Reparatur lässt sich komplett mit der App plan
 Alle Datensätze: `id` (UUID), `aktualisiert_am`, `geloescht`.
 
 - **fahrzeug** (ein Datensatz): baujahr, vin, fahrzeugschein_angaben, motor_variante_id (`null` bis bestätigt), motor_bestaetigt_durch (`motorcode` | `vin` | `gussnummer` | `null`), getriebe, verteilergetriebe, achse_vorne, achse_hinten, vergaser, zuendung, kraftstoff (`benzin` | `bivalent_lpg`), gasanlage {hersteller, typ, typschild, tank_baujahr, verdampfer, gemischbildung, umschalter}
-- **umbau**: bauteil_id?, beschreibung, datum, ersetzt_handbuchwert (bool)
+- **umbau**: bauteil_id?, modell_teil_id?, beschreibung, datum, ersetzt_handbuchwert (bool)
 - **motor_variante** (aus der Wissensbasis): name, zylinder, hubraum_l, bauart, baujahre, erkennungsmerkmale[]
 - **baugruppe**: name, eltern_id?, modell_teil_id (Bezug zum 3D-Modell)
 - **bauteil**: baugruppe_id, name, teilenummern[] {nummer, quelle}, motor_varianten[] (leer = alle), stichwoerter[]
@@ -33,7 +33,7 @@ Alle Datensätze: `id` (UUID), `aktualisiert_am`, `geloescht`.
 Vorbereitet, aber ohne Code (V2/V3): wartung, logbuch, kosten, sensor_messwert.
 
 ## Wissensbasis
-Format: `docs/wissensbasis-format.md`. Die Werte kommen aus dem Werkstatthandbuch und dem Teilekatalog von 1974 (noch zu beschaffen). Format: JSON-Dateien in `wissensbasis/` (privat), eingelesen über einen Import in den Einstellungen. Jeder Sollwert und jede Teilenummer braucht `quelle`; der Import lehnt Einträge ohne Quelle ab. Im Repo liegt nur das Schema mit einem kleinen, klar als Beispiel markierten Datensatz für Tests.
+Format: `docs/wissensbasis-format.md`. Die Werte kommen aus dem Werkstatthandbuch und dem Teilekatalog von 1974 (noch zu beschaffen). Die echte Datei liegt in `wissensbasis/` (privat) und wird im Menü unter Bauteile importiert. Jeder Sollwert und jede Teilenummer braucht `quelle`; der Import lehnt Einträge ohne Quelle ab. Im Repo liegt nur das Schema mit einem kleinen, klar als Beispiel markierten Datensatz für Tests.
 
 ## Schritte
 1. [x] **Projektgerüst:** Vite + TS strict, ESLint, Vitest, Preact, `npm run check`, PWA-Manifest „CJ6-Repair“ mit Icons und Service Worker, Übersetzungen de/en, GitHub-Action mit Deploy auf Pages, Start auf dem Handy per LAN.
@@ -43,7 +43,7 @@ Format: `docs/wissensbasis-format.md`. Die Werte kommen aus dem Werkstatthandbuc
 5. [x] **Flyout:** Overlay mit Unschärfe, Tabs Bauteile und Diagnose, Suche, Gruppen; Bauteildetail mit Notizen-Platzhalter. Suche ignoriert Umlaute und Groß-/Kleinschreibung (`src/logic/suche.ts`); am Laptop offen, am Handy zu und nach Auswahl wieder zu; gewähltes Teil erscheint neben dem offenen Menü. Diagnose-Reiter zeigt die kommenden Funktionen als „folgt“.
 6. [x] **Datenbank:** Dexie-Schema oben, `persist()`, Zeitstempel und Soft-Delete als gemeinsame Hilfsfunktion, Tests mit `fake-indexeddb`. Typen in `src/model/typen.ts`, Schema in `src/db/datenbank.ts` (17 Tabellen, V2/V3-Tabellen nur angelegt), Schreibzugriffe über `src/db/repo.ts`. Notizen und Fotos hängen über `bezug_art` + `bezug_id` auch direkt an Modellteilen, solange es noch keine Bauteile aus der Wissensbasis gibt.
 7. [x] **Wissensbasis-Import:** JSON-Schema, Prüfung (Quelle Pflicht), Import aus Datei, Beispieldatensatz. Format in `docs/wissensbasis-format.md`, Beispiel in `docs/wissensbasis-beispiel.json` (wird im Test mitgeprüft). IDs der Wissensbasis kommen aus der Datei (stabil, damit ein erneuter Import aktualisiert statt verdoppelt). Die Datei ersetzt die Wissensbasis: Vorschau mit neu/geändert/entfernt, dann Import in einer Transaktion; Fehlendes wird weich gelöscht. Import unten im Reiter Bauteile.
-8. [ ] **Fahrzeugprofil:** Formular inkl. Gasanlage und Umbauten.
+8. [x] **Fahrzeugprofil:** Formular inkl. Gasanlage und Umbauten. Eigener Reiter „Fahrzeug“ im Menü; jedes Feld speichert beim Verlassen, ungültige Jahre werden erklärt statt gespeichert; VIN wird bereinigt; Gasanlage nur bei bivalentem Betrieb; Umbauten mit Datum, Modellteil und „ersetzt Handbuchwerte“, Entfernen mit Rückfrage. Datum je Sprache formatiert (`src/logic/format.ts`).
 9. [ ] **Motorerkennung:** Kandidaten aus Angaben filtern, mit Begründung und Sicherheitsgrad (reine Logik, getestet); Fotos anhängen; Bestätigung fixiert das Profil.
 10. [ ] **Notizen und Fotos an Bauteilen:** Kamera über Datei-Eingabe, Speicherung als Blob, Vorschaubilder.
 11. [ ] **To-do-Liste:** Aufgaben mit Priorität (Sicherheit zuerst), Zeitaufwand, Abhaken, Verknüpfung zum Bauteil (springt im Modell dorthin).

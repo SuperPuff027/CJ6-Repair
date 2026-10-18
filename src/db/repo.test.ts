@@ -1,9 +1,9 @@
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { neuerDatensatz } from '../logic/datensatz';
-import type { Fahrzeug, Foto, Notiz } from '../model/typen';
+import type { Fahrzeug, Foto, Notiz, Umbau } from '../model/typen';
 import { db } from './datenbank';
-import { ladeAktive, ladeFahrzeug, ladeFotos, ladeNotizen, loescheWeich, speichere } from './repo';
+import { aendereFahrzeug, ladeAktive, ladeFahrzeug, ladeFotos, ladeNotizen, ladeUmbauten, loescheWeich, speichere } from './repo';
 
 const ALT = new Date('2026-01-01T00:00:00Z');
 
@@ -67,5 +67,24 @@ describe('Notizen und Fotos zu einem Bezug', () => {
     await db.fotos.put(foto);
     const [geladen] = await ladeFotos('modellteil', 'bremsen_vorne');
     expect(geladen?.blob.size).toBe(12);
+  });
+});
+
+describe('aendereFahrzeug', () => {
+  it('übernimmt einzelne Felder und lässt den Rest stehen', async () => {
+    await aendereFahrzeug({ getriebe: 'Beispielgetriebe' });
+    const f = await aendereFahrzeug({ vin: 'BEISPIEL123' });
+    expect(f).toMatchObject({ getriebe: 'Beispielgetriebe', vin: 'BEISPIEL123', baujahr: 1974 });
+    expect(await ladeFahrzeug()).toEqual(f);
+  });
+});
+
+describe('ladeUmbauten', () => {
+  it('liefert aktive Umbauten, neueste zuerst', async () => {
+    const umbau = (beschreibung: string, datum: string | null) =>
+      neuerDatensatz<Umbau>({ beschreibung, datum, bauteil_id: null, modell_teil_id: null, ersetzt_handbuchwert: false }, ALT);
+    const weg = umbau('entfernt', '2024-01-01');
+    await db.umbauten.bulkPut([umbau('alt', '2019-01-01'), umbau('neu', '2023-01-01'), { ...weg, geloescht: true }]);
+    expect((await ladeUmbauten()).map((u) => u.beschreibung)).toEqual(['neu', 'alt']);
   });
 });

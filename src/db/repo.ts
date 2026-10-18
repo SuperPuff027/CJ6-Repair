@@ -1,6 +1,7 @@
 import type { Table } from 'dexie';
 import { alsGeloescht, geaendert, nurAktive, standardFahrzeug } from '../logic/datensatz';
-import { FAHRZEUG_ID, type BezugArt, type Fahrzeug, type Foto, type MitId, type Notiz } from '../model/typen';
+import { sortiereUmbauten } from '../logic/fahrzeug';
+import { FAHRZEUG_ID, type BezugArt, type Fahrzeug, type Foto, type MitId, type Notiz, type Umbau } from '../model/typen';
 import { db } from './datenbank';
 
 // Alle Schreibzugriffe laufen über diese Funktionen, damit aktualisiert_am
@@ -25,6 +26,21 @@ export async function loescheWeich<T extends MitId>(tabelle: Table<T, string>, i
 
 export async function ladeFahrzeug(): Promise<Fahrzeug> {
   return (await db.fahrzeug.get(FAHRZEUG_ID)) ?? standardFahrzeug(new Date());
+}
+
+export type FahrzeugAenderung = Partial<Omit<Fahrzeug, 'id' | 'aktualisiert_am' | 'geloescht'>>;
+
+/** Übernimmt einzelne Felder ins gespeicherte Fahrzeug (oder ins Standardfahrzeug). */
+export async function aendereFahrzeug(aenderung: FahrzeugAenderung): Promise<Fahrzeug> {
+  return db.transaction('rw', db.fahrzeug, async () => {
+    const neu = geaendert({ ...(await ladeFahrzeug()), ...aenderung }, new Date());
+    await db.fahrzeug.put(neu);
+    return neu;
+  });
+}
+
+export async function ladeUmbauten(): Promise<Umbau[]> {
+  return sortiereUmbauten(await ladeAktive(db.umbauten));
 }
 
 /** Aktive Notizen oder Fotos zu einem Bezug, älteste zuerst. */

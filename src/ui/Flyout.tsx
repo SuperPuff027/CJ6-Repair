@@ -3,9 +3,11 @@ import { gruppenSchluessel, teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
 import { passtZurSuche } from '../logic/suche';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS, TEIL_GRUPPE, type ModellTeilId } from '../szene/modell';
+import { FahrzeugProfil } from './FahrzeugProfil';
 import { WissensbasisImport } from './WissensbasisImport';
 
-type Reiter = 'bauteile' | 'diagnose';
+type Reiter = 'bauteile' | 'diagnose' | 'fahrzeug';
+const REITER: readonly Reiter[] = ['bauteile', 'diagnose', 'fahrzeug'];
 
 const KREUZ = (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -48,7 +50,7 @@ export function Flyout(props: {
       </div>
 
       <div class="reiter" role="tablist">
-        {(['bauteile', 'diagnose'] as const).map((r) => (
+        {REITER.map((r) => (
           <button
             key={r}
             role="tab"
@@ -58,7 +60,7 @@ export function Flyout(props: {
             aria-controls={`bereich-${r}`}
             onClick={() => setzeReiter(r)}
           >
-            {t(r === 'bauteile' ? 'reiter.bauteile' : 'reiter.diagnose')}
+            {t(`reiter.${r}`)}
           </button>
         ))}
       </div>
@@ -119,6 +121,10 @@ export function Flyout(props: {
           </div>
         ))}
         <p class="flyout-notiz">{t('diagnose.hinweis')}</p>
+      </div>
+
+      <div class="flyout-bereich" id="bereich-fahrzeug" role="tabpanel" aria-labelledby="reiter-fahrzeug" hidden={reiter !== 'fahrzeug'}>
+        {reiter === 'fahrzeug' && <FahrzeugProfil />}
       </div>
     </aside>
   );

@@ -473,3 +473,115 @@ button {
   font-size: 13px;
   font-weight: 500;
 }
+
+/* Fahrzeugprofil: Formular im Reiter Fahrzeug */
+.profil-meldung {
+  min-height: 1.2em;
+  margin: 0 0 4px;
+  font-size: 12.5px;
+  color: var(--gedaempft);
+}
+.profil-abschnitt {
+  margin-bottom: 22px;
+}
+.profil-abschnitt .gruppe-titel {
+  margin-bottom: 10px;
+}
+.feld {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.feld label,
+.feld-label {
+  font-size: 13px;
+  color: var(--fg);
+}
+.eingabe {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--kante);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  line-height: 1.4;
+}
+textarea.eingabe {
+  resize: vertical;
+}
+select.eingabe {
+  background: var(--bg);
+}
+.eingabe:focus {
+  border-color: var(--line);
+  outline: none;
+}
+.eingabe[aria-invalid='true'] {
+  border-color: var(--rot);
+}
+.feld-hinweis,
+.feld-fehler {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--gedaempft);
+}
+.feld-fehler {
+  color: var(--rot);
+}
+.umbau-liste {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.umbau {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--kante);
+}
+.umbau-text {
+  margin: 0;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.umbau-info {
+  margin: 2px 0 6px;
+  font-size: 12.5px;
+  color: var(--gedaempft);
+}
+.umbau-formular {
+  padding: 12px;
+  border: 1px solid var(--kante);
+  border-radius: 8px;
+}
+.haken {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.haken input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--fg);
+}
+.text-knopf {
+  min-height: 32px;
+  padding: 0;
+  font-size: 12.5px;
+  color: var(--gedaempft);
+  text-decoration: underline;
+}
+.voll-knopf.warn {
+  background: var(--rot);
+  color: var(--bg);
+}
+.voll-knopf:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

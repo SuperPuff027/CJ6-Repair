@@ -66,6 +66,8 @@ export interface Fahrzeug extends MitId {
 /** Abweichung vom Werkszustand. Eigene Werte überschreiben Handbuchwerte sichtbar. */
 export interface Umbau extends MitId {
   bauteil_id: string | null;
+  /** Ohne Datenbank-Bauteil: Teil im 3D-Modell */
+  modell_teil_id: ModellTeilId | null;
   beschreibung: string;
   /** Lokales Datum JJJJ-MM-TT */
   datum: string | null;
