@@ -2,16 +2,20 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { gruppenSchluessel, teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
 import { db } from '../db/datenbank';
+import { ladeAktive } from '../db/repo';
+import { sortiereAufgaben } from '../logic/aufgaben';
+import type { Aufgabe } from '../model/typen';
 import { zaehleJeBezug } from '../logic/bezug';
 import { passtZurSuche } from '../logic/suche';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS, TEIL_GRUPPE, type ModellTeilId } from '../szene/modell';
+import { Aufgaben } from './Aufgaben';
 import { FahrzeugProfil } from './FahrzeugProfil';
 import { FotoAblage } from './FotoAblage';
 import { Notizen } from './Notizen';
 import { WissensbasisImport } from './WissensbasisImport';
 
-type Reiter = 'bauteile' | 'diagnose' | 'fahrzeug';
-const REITER: readonly Reiter[] = ['bauteile', 'diagnose', 'fahrzeug'];
+type Reiter = 'bauteile' | 'aufgaben' | 'diagnose' | 'fahrzeug';
+const REITER: readonly Reiter[] = ['bauteile', 'aufgaben', 'diagnose', 'fahrzeug'];
 
 const KREUZ = (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -37,8 +41,15 @@ export function Flyout(props: {
       (alle) => setzeNotizZaehler(zaehleJeBezug(alle, 'modellteil')),
       (e) => console.error('Notizen nicht lesbar', e),
     );
+  const [aufgaben, setzeAufgaben] = useState<Aufgabe[]>([]);
+  // undefined = kein Wunsch; null = neue Aufgabe ohne Teil; sonst mit diesem Teil
+  const [neueAufgabeFuer, setzeNeueAufgabeFuer] = useState<ModellTeilId | null | undefined>(undefined);
+  const ladeAufgaben = () => ladeAktive(db.aufgaben).then(setzeAufgaben, (e) => console.error('Aufgaben nicht lesbar', e));
+
   useEffect(() => {
-    if (props.offen) void zaehleNotizen();
+    if (!props.offen) return;
+    void zaehleNotizen();
+    void ladeAufgaben();
   }, [props.offen]);
 
   // Am Laptop gleich tippen können; am Handy würde das die Tastatur über das Menü schieben.
@@ -110,6 +121,23 @@ export function Flyout(props: {
                   </button>
                   {gewaehlt && (
                     <div class="teil-detail">
+                      <h4 class="detail-titel">{t('reiter.aufgaben')}</h4>
+                      <ul class="detail-aufgaben">
+                        {sortiereAufgaben(aufgaben.filter((a) => a.modell_teil_id === id && a.status !== 'erledigt')).map((a) => (
+                          <li key={a.id} class={`prio-${a.prioritaet}`}>
+                            {a.titel}
+                          </li>
+                        ))}
+                      </ul>
+                      <button
+                        class="rand-knopf"
+                        onClick={() => {
+                          setzeNeueAufgabeFuer(id);
+                          setzeReiter('aufgaben');
+                        }}
+                      >
+                        {t('detail.aufgabe_neu')}
+                      </button>
                       <h4 class="detail-titel">{t('notiz.titel')}</h4>
                       <Notizen art="modellteil" id={id} beiAenderung={zaehleNotizen} />
                       <h4 class="detail-titel">{t('detail.fotos')}</h4>
@@ -125,6 +153,16 @@ export function Flyout(props: {
           </section>
         ))}
         {!anfrage && <WissensbasisImport />}
+      </div>
+
+      <div class="flyout-bereich" id="bereich-aufgaben" role="tabpanel" aria-labelledby="reiter-aufgaben" hidden={reiter !== 'aufgaben'}>
+        <Aufgaben
+          aufgaben={aufgaben}
+          neuLaden={ladeAufgaben}
+          waehle={(teil) => props.waehle(teil)}
+          neuFuer={neueAufgabeFuer}
+          neuGeoeffnet={() => setzeNeueAufgabeFuer(undefined)}
+        />
       </div>
 
       <div class="flyout-bereich" id="bereich-diagnose" role="tabpanel" aria-labelledby="reiter-diagnose" hidden={reiter !== 'diagnose'}>
