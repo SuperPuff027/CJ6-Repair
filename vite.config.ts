@@ -10,13 +10,14 @@ declare const process: { env: Record<string, string | undefined> };
 // Hintergrund des dunklen Modus; gilt auch für Startbildschirm und Statusleiste.
 const THEMA_FARBE = '#080c11';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   // GitHub Pages liefert unter /<repo-name>/ aus; der Workflow setzt BASE_PATH.
   base: process.env.BASE_PATH ?? '/',
   plugins: [
     preact(),
     // HTTPS im LAN, damit Service Worker und Kamera auf dem Handy funktionieren.
-    basicSsl(),
+    // Modus „lokal“ (npm run dev:lokal) läuft per HTTP nur auf localhost, das ohnehin als sicher gilt.
+    mode === 'lokal' ? null : basicSsl(),
     VitePWA({
       // Neue Version wird im Hintergrund geladen und sofort aktiviert (Seite lädt neu).
       registerType: 'autoUpdate',
@@ -49,4 +50,4 @@ export default defineConfig({
     include: ['src/**/*.test.ts'],
     environment: 'node',
   },
-});
+}));

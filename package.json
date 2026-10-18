@@ -4,6 +4,7 @@
   "description": "Offlinefähige Werkstatt-App für einen Jeep CJ-6 (1974)",
   "scripts": {
     "dev": "vite --host",
+    "dev:lokal": "vite --mode lokal --port 5173 --strictPort",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
     "typecheck": "tsc --noEmit",
