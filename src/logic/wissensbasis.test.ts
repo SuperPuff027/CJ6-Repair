@@ -147,3 +147,22 @@ describe('Teil-Import', () => {
     expect(plan.zusammenfassung.symptom_knoten.entfernt).toBe(1);
   });
 });
+
+describe('Material in Anleitungen', () => {
+  it('wird gelesen und verlangt bei Teilenummern eine Quelle', () => {
+    expect(gueltig(beispiel).anleitungen[0]?.material).toEqual([
+      expect.objectContaining({ art: 'teil', teilenummer: 'BEISPIEL-0000' }),
+      expect.objectContaining({ art: 'verbrauch', teilenummer: null, quelle: null }),
+    ]);
+    const d = kopie();
+    const material = d.anleitungen[0]!.material as Record<string, unknown>[];
+    delete material[0]!.quelle;
+    material[1]!.art = 'werkzeug';
+    material[1]!.menge = 0;
+    expect(codes(d)).toEqual([
+      'quelle_fehlt anleitungen[0].material[0].quelle',
+      'falscher_typ anleitungen[0].material[1].art',
+      'falscher_typ anleitungen[0].material[1].menge',
+    ]);
+  });
+});

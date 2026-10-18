@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'preact/hooks';
 import { db } from '../db/datenbank';
-import { ladeAktive, speichere } from '../db/repo';
+import { planeReparaturpaket } from '../db/reparaturpaket';
+import { ladeAktive } from '../db/repo';
 import { teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
-import { vorgeschlagenePrioritaet } from '../logic/aufgaben';
-import { neuerDatensatz } from '../logic/datensatz';
 import { ordneMaengelZu, type Zuordnung } from '../logic/maengel';
-import type { Aufgabe } from '../model/typen';
+import type { Reparaturpaket } from '../logic/reparaturpaket';
 import { MODELL_TEIL_IDS, type ModellTeilId } from '../szene/modell';
+import { PaketVorschau } from './Reparaturpaket';
 
 interface Eintrag {
   zuordnung: Zuordnung;
@@ -32,6 +32,7 @@ export function Maengel(props: { waehle: (id: ModellTeilId) => void; beiNeuerAuf
   const [eintraege, setzeEintraege] = useState<Eintrag[]>([]);
   const [zusatz, setzeZusatz] = useState<Partial<Record<ModellTeilId, string[]>>>({});
   const [fehler, setzeFehler] = useState(false);
+  const [paket, setzePaket] = useState<{ paket: Reparaturpaket; indizes: number[] } | null>(null);
 
   useEffect(() => {
     ladeZusatzStichwoerter().then(setzeZusatz, (e) => console.error('Bauteile nicht lesbar', e));
@@ -39,43 +40,33 @@ export function Maengel(props: { waehle: (id: ModellTeilId) => void; beiNeuerAuf
 
   const zuordnen = (e: Event) => {
     e.preventDefault();
+    setzePaket(null);
     setzeEintraege(
       ordneMaengelZu(text, zusatz).map((z) => ({ zuordnung: z, teil: z.art === 'eindeutig' ? z.teil : null, aufgabeAngelegt: false })),
     );
   };
 
-  const setzeTeil = (index: number, teil: ModellTeilId | null) =>
+  const setzeTeil = (index: number, teil: ModellTeilId | null) => {
+    setzePaket(null); // Eine geänderte Zuordnung macht ein vorbereitetes Paket ungültig.
     setzeEintraege((alt) => alt.map((e, i) => (i === index ? { ...e, teil } : e)));
+  };
 
-  const alsAufgabe = async (indizes: number[]) => {
+  const paketErstellen = async (indizes: number[]) => {
     setzeFehler(false);
     try {
-      for (const i of indizes) {
-        const e = eintraege[i]!;
-        await speichere(
-          db.aufgaben,
-          neuerDatensatz<Aufgabe>(
-            {
-              titel: e.zuordnung.text,
-              bauteil_id: null,
-              modell_teil_id: e.teil,
-              anleitung_id: null,
-              mangel_text: e.zuordnung.text,
-              prioritaet: e.zuordnung.gasgeruch ? 'sicherheit' : vorgeschlagenePrioritaet(e.teil),
-              geschaetzt_min: null,
-              status: 'offen',
-              erledigt_am: null,
-            },
-            new Date(),
-          ),
-        );
-      }
-      setzeEintraege((alt) => alt.map((e, i) => (indizes.includes(i) ? { ...e, aufgabeAngelegt: true } : e)));
-      props.beiNeuerAufgabe();
+      const maengel = indizes.map((i) => ({ text: eintraege[i]!.zuordnung.text, teil: eintraege[i]!.teil!, gasgeruch: eintraege[i]!.zuordnung.gasgeruch }));
+      setzePaket({ paket: await planeReparaturpaket(maengel), indizes });
     } catch (fehler) {
-      console.error('Aufgabe nicht gespeichert', fehler);
+      console.error('Reparaturpaket nicht erstellt', fehler);
       setzeFehler(true);
     }
+  };
+
+  const angelegt = () => {
+    const indizes = paket?.indizes ?? [];
+    setzeEintraege((alt) => alt.map((e, i) => (indizes.includes(i) ? { ...e, aufgabeAngelegt: true } : e)));
+    setzePaket(null);
+    props.beiNeuerAufgabe();
   };
 
   const bereit = eintraege.map((e, i) => (e.teil && !e.aufgabeAngelegt ? i : -1)).filter((i) => i >= 0);
@@ -160,25 +151,18 @@ export function Maengel(props: { waehle: (id: ModellTeilId) => void; beiNeuerAuf
                     </select>
                   </div>
                 )}
-                {e.aufgabeAngelegt ? (
-                  <p class="mangel-fertig">{t('mangel.aufgabe_angelegt')}</p>
-                ) : (
-                  e.teil && (
-                    <button class="rand-knopf" onClick={() => alsAufgabe([i])}>
-                      {t('mangel.als_aufgabe')}
-                    </button>
-                  )
-                )}
+                {e.aufgabeAngelegt && <p class="mangel-fertig">{t('mangel.aufgabe_angelegt')}</p>}
               </li>
             );
           })}
         </ul>
       )}
-      {bereit.length > 1 && (
-        <button class="voll-knopf" onClick={() => alsAufgabe(bereit)}>
-          {t('mangel.alle_als_aufgaben', { n: bereit.length })}
+      {bereit.length > 0 && !paket && (
+        <button class="voll-knopf" onClick={() => paketErstellen(bereit)}>
+          {t('paket.erstellen', { n: bereit.length })}
         </button>
       )}
+      {paket && <PaketVorschau paket={paket.paket} angelegt={angelegt} verwerfen={() => setzePaket(null)} />}
       {fehler && <p class="feld-fehler">{t('aufgabe.fehler')}</p>}
     </section>
   );

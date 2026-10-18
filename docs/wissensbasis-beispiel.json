@@ -38,6 +38,17 @@
       "titel": "BEISPIEL Bremstrommel prüfen",
       "geprueft": false,
       "quelle": null,
+      "material": [
+        {
+          "art": "teil",
+          "bezeichnung": "BEISPIEL Bremstrommel",
+          "menge": 1,
+          "einheit": "Stück",
+          "teilenummer": "BEISPIEL-0000",
+          "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" }
+        },
+        { "art": "verbrauch", "bezeichnung": "BEISPIEL Bremsenreiniger", "menge": 1, "einheit": "Dose" }
+      ],
       "schritte": [
         {
           "text": "BEISPIEL: Fahrzeug sichern, Rad abnehmen.",

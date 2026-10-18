@@ -72,8 +72,11 @@ Alle Listen sind optional (siehe oben: fehlende Listen bleiben unverändert). Fe
 | `geprueft` | ja/nein | `true` nur mit Quelle |
 | `quelle?` | Quelle | |
 | `schritte` | Liste von Schritten | |
+| `material?` | Liste | Ersatzteile und Verbrauchsmaterial für die Einkaufsliste (siehe unten) |
 
 Ein Schritt: `text`; optional `bild`, `werkzeug` (Liste), `sollwerte` (Liste von `{ groesse, wert, einheit, quelle }`, Quelle Pflicht) und `warnung`.
+
+Ein Material: `art` (`"teil"` oder `"verbrauch"`), `bezeichnung`, `menge` (größer 0), `einheit` (z. B. „Stück“, „l“); optional `teilenummer` – dann ist `quelle` Pflicht. Das Werkzeug für die Werkzeugliste kommt aus den Schritten.
 
 ### symptom_knoten
 

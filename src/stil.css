@@ -975,3 +975,95 @@ select.eingabe {
 .diagnose-weitere {
   margin-top: 8px;
 }
+
+/* Reparaturpaket und Einkaufsliste */
+.paket {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.paket-liste {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+.paket-mangel {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--kante);
+}
+.paket-mangel .chip {
+  margin-left: 2px;
+}
+.anleitung-status {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.anleitung-status.ungeprueft,
+.anleitung-status.keine {
+  color: var(--gedaempft);
+}
+.anleitung-status.ungeprueft::before {
+  content: '! ';
+  color: var(--rot);
+  font-weight: 700;
+}
+.posten-gruppe {
+  margin-bottom: 8px;
+}
+.posten-titel {
+  margin: 6px 0 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gedaempft);
+}
+.posten-liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.posten,
+.posten-haken {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 36px;
+  font-size: 13.5px;
+}
+.posten-haken {
+  justify-content: flex-start;
+  width: 100%;
+  cursor: pointer;
+}
+.posten-haken input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--fg);
+}
+.posten-haken .posten-menge {
+  margin-left: auto;
+}
+.posten-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.posten-nummer {
+  font-family: var(--schrift-mono);
+  font-size: 12px;
+  color: var(--gedaempft);
+}
+.posten-menge {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  color: var(--gedaempft);
+}
+.posten.vorhanden .posten-name {
+  color: var(--gedaempft);
+}
+.einkaufsliste {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid var(--kante);
+}

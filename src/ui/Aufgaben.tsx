@@ -8,6 +8,7 @@ import { neuerDatensatz } from '../logic/datensatz';
 import { formatiereDatum, lokalesDatum } from '../logic/format';
 import type { Aufgabe, AufgabenStatus, Prioritaet } from '../model/typen';
 import { MODELL_TEIL_IDS, type ModellTeilId } from '../szene/modell';
+import { Einkaufsliste } from './Einkaufsliste';
 
 function NeueAufgabe(props: { teil: ModellTeilId | null; fertig: () => void; abbrechen: () => void; melde: (fehler: boolean) => void }) {
   const { t } = useSprache();
@@ -252,6 +253,8 @@ export function Aufgaben(props: {
           {erledigteZeigen && <ul class="aufgaben-liste erledigte">{erledigt.map(eintrag)}</ul>}
         </>
       )}
+
+      <Einkaufsliste aufgaben={props.aufgaben} />
     </div>
   );
 }

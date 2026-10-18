@@ -5,6 +5,7 @@ import type {
   AnleitungsSchritt,
   Baugruppe,
   Bauteil,
+  Material,
   MitId,
   MotorVariante,
   Quelle,
@@ -248,12 +249,27 @@ export function pruefeWissensbasis(roh: unknown): PruefErgebnis {
         },
       ];
     });
+    const material = l.liste(o, 'material', p, false).flatMap((mw, j): Material[] => {
+      const mp = `${p}.material[${j}]`;
+      const m = l.objekt(mw, mp);
+      if (!m) return [];
+      const art = m.art === 'teil' || m.art === 'verbrauch' ? m.art : null;
+      if (!art) l.melde(m.art === undefined ? 'pflichtfeld' : 'falscher_typ', `${mp}.art`);
+      const teilenummer = l.textOderNull(m, 'teilenummer', mp);
+      // Wie bei Bauteilen: eine Teilenummer braucht eine Quelle.
+      const quelle = l.quelle(m, 'quelle', mp, teilenummer !== null);
+      const menge = l.zahl(m, 'menge', mp);
+      if (menge <= 0 && m.menge !== undefined) l.melde('falscher_typ', `${mp}.menge`);
+      const eintrag = { bezeichnung: l.text(m, 'bezeichnung', mp), menge, einheit: l.text(m, 'einheit', mp), teilenummer, quelle };
+      return art ? [{ art, ...eintrag }] : [];
+    });
     return [
       {
         id: l.text(o, 'id', p),
         bauteil_id: l.text(o, 'bauteil_id', p),
         titel: l.text(o, 'titel', p),
         schritte,
+        material,
         geprueft,
         // Eine als geprüft markierte Anleitung braucht eine Quelle.
         quelle: l.quelle(o, 'quelle', p, geprueft),

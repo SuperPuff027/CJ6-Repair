@@ -136,10 +136,22 @@ export interface AnleitungsSchritt {
   warnung: string | null;
 }
 
+/** Für eine Anleitung benötigtes Ersatzteil oder Verbrauchsmaterial. */
+export interface Material {
+  art: 'teil' | 'verbrauch';
+  bezeichnung: string;
+  menge: number;
+  einheit: string;
+  /** Mit Teilenummer ist die Quelle Pflicht. */
+  teilenummer: string | null;
+  quelle: Quelle | null;
+}
+
 export interface Anleitung extends MitId {
   bauteil_id: string;
   titel: string;
   schritte: AnleitungsSchritt[];
+  material: Material[];
   /** false = Entwurf ohne geprüfte Grundlage; wird deutlich als ungeprüft markiert */
   geprueft: boolean;
   quelle: Quelle | null;
