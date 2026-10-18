@@ -11,6 +11,7 @@ import { MODELL_GRUPPEN, MODELL_TEIL_IDS, TEIL_GRUPPE, type ModellTeilId } from 
 import { Aufgaben } from './Aufgaben';
 import { FahrzeugProfil } from './FahrzeugProfil';
 import { FotoAblage } from './FotoAblage';
+import { Maengel } from './Maengel';
 import { Notizen } from './Notizen';
 import { WissensbasisImport } from './WissensbasisImport';
 
@@ -166,9 +167,11 @@ export function Flyout(props: {
       </div>
 
       <div class="flyout-bereich" id="bereich-diagnose" role="tabpanel" aria-labelledby="reiter-diagnose" hidden={reiter !== 'diagnose'}>
+        <h3 class="gruppe-titel">{t('diagnose.mangel')}</h3>
+        <Maengel waehle={(teil) => props.waehle(teil)} beiNeuerAufgabe={ladeAufgaben} />
+        <h3 class="gruppe-titel diagnose-weitere">{t('diagnose.weitere')}</h3>
         {(
           [
-            ['diagnose.mangel', 'diagnose.mangel_info'],
             ['diagnose.messwerte', 'diagnose.messwerte_info'],
             ['diagnose.symptome', 'diagnose.symptome_info'],
           ] as const
@@ -181,7 +184,6 @@ export function Flyout(props: {
             <span class="bald">{t('diagnose.bald')}</span>
           </div>
         ))}
-        <p class="flyout-notiz">{t('diagnose.hinweis')}</p>
       </div>
 
       <div class="flyout-bereich" id="bereich-fahrzeug" role="tabpanel" aria-labelledby="reiter-fahrzeug" hidden={reiter !== 'fahrzeug'}>

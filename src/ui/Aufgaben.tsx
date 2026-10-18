@@ -218,8 +218,10 @@ export function Aufgaben(props: {
       <p class="flyout-notiz aufgaben-summe">
         {offen.length === 0
           ? t('aufgabe.keine_offenen')
-          : t('aufgabe.summe', { n: offen.length, dauer: formatiereDauer(zeit.minuten) }) +
-            (zeit.ohneSchaetzung > 0 ? ` ${t('aufgabe.ohne_schaetzung', { n: zeit.ohneSchaetzung })}` : '')}
+          : zeit.minuten === 0
+            ? t('aufgabe.summe_ohne_zeit', { n: offen.length })
+            : t('aufgabe.summe', { n: offen.length, dauer: formatiereDauer(zeit.minuten) }) +
+              (zeit.ohneSchaetzung > 0 ? ` ${t('aufgabe.ohne_schaetzung', { n: zeit.ohneSchaetzung })}` : '')}
       </p>
 
       {formular ? (

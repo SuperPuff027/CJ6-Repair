@@ -926,3 +926,52 @@ select.eingabe {
 .detail-aufgaben .prio-sicherheit {
   color: var(--rot);
 }
+
+/* Mängel-Eingabe */
+.maengel {
+  margin-bottom: 20px;
+}
+.maengel form {
+  margin-bottom: 12px;
+}
+.gefahr {
+  margin: 12px 0;
+  padding: 12px;
+  border: 2px solid var(--rot);
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.gefahr p {
+  margin: 0;
+}
+.gefahr-titel {
+  margin-bottom: 4px !important;
+  color: var(--rot);
+  font-weight: 700;
+}
+.mangel-liste {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.mangel {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--kante);
+}
+.mangel-text {
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+.mangel .knopf-reihe,
+.mangel .aufgabe-chips {
+  margin-bottom: 8px;
+}
+.mangel-fertig {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--gedaempft);
+}
+.diagnose-weitere {
+  margin-top: 8px;
+}
