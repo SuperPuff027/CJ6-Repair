@@ -40,7 +40,7 @@ Die Werte kommen aus dem Werkstatthandbuch und dem Teilekatalog von 1974 (noch z
 2. [x] **Design-Grundlage:** Farb- und Schrift-Tokens hell/dunkel, Theme-Umschalter und Sprachwahl (gespeichert), App-Leiste. Theme und Sprache vorerst im Browser-Speicher (`src/geraet/speicher.ts`), Systemschrift statt eigener Schrift (offline, keine Abhängigkeit).
 3. [x] **3D-Szene:** three.js-Szene aus dem Prototyp übernehmen (`src/szene/`), Outline-Linien in Theme-Farbe, Drehen und Zoomen, Modellteile mit festen IDs. Modell in `src/szene/modell.ts` (30 Teile in 5 Gruppen, Radstand 2642 mm wie CJ-6 ab 1972), Szene in `src/szene/szene.ts`; Startabstand passt sich der Bildschirmform an.
 4. [x] **Auswahl im Modell:** Bauteil wählen → Kameraflug, Rotfärbung, Rest blasser; Antippen im Modell; Logik für Kamerablickwinkel getestet. Gewähltes Teil rot (Linien obenauf, leichte Füllung), Rest gedimmt; Antippen wählt das kleinste getroffene Teil; Escape oder × hebt auf.
-5. [ ] **Flyout:** Overlay mit Unschärfe, Tabs Bauteile und Diagnose, Suche, Gruppen; Bauteildetail mit Notizen-Platzhalter.
+5. [x] **Flyout:** Overlay mit Unschärfe, Tabs Bauteile und Diagnose, Suche, Gruppen; Bauteildetail mit Notizen-Platzhalter. Suche ignoriert Umlaute und Groß-/Kleinschreibung (`src/logic/suche.ts`); am Laptop offen, am Handy zu und nach Auswahl wieder zu; gewähltes Teil erscheint neben dem offenen Menü. Diagnose-Reiter zeigt die kommenden Funktionen als „folgt“.
 6. [ ] **Datenbank:** Dexie-Schema oben, `persist()`, Zeitstempel und Soft-Delete als gemeinsame Hilfsfunktion, Tests mit `fake-indexeddb`.
 7. [ ] **Wissensbasis-Import:** JSON-Schema, Prüfung (Quelle Pflicht), Import aus Datei, Beispieldatensatz.
 8. [ ] **Fahrzeugprofil:** Formular inkl. Gasanlage und Umbauten.

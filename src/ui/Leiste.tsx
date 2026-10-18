@@ -17,7 +17,13 @@ const MOND = (
   </svg>
 );
 
-export function Leiste(props: { thema: Thema; themaUmschalten: () => void }) {
+const MENUE = (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 7h16M4 12h11M4 17h16" />
+  </svg>
+);
+
+export function Leiste(props: { thema: Thema; themaUmschalten: () => void; menueOffen: boolean; menueOeffnen: () => void }) {
   const { t, sprache, setzeSprache } = useSprache();
   const { thema, themaUmschalten: umschalten } = props;
 
@@ -29,9 +35,20 @@ export function Leiste(props: { thema: Thema; themaUmschalten: () => void }) {
 
   return (
     <header class="leiste">
-      <div class="marke">
-        <span class="marke-name">{t('app.titel')}</span>
-        <span class="marke-zusatz">{t('app.untertitel', { jahr: BAUJAHR })}</span>
+      <div class="leiste-links">
+        <button
+          class="rund-knopf"
+          onClick={props.menueOeffnen}
+          aria-label={t('menue.oeffnen')}
+          aria-expanded={props.menueOffen}
+          aria-controls="flyout"
+        >
+          {MENUE}
+        </button>
+        <div class="marke">
+          <span class="marke-name">{t('app.titel')}</span>
+          <span class="marke-zusatz">{t('app.untertitel', { jahr: BAUJAHR })}</span>
+        </div>
       </div>
       <div class="leiste-knoepfe">
         <button class="rund-knopf sprach-knopf" onClick={wechsleSprache} aria-label={t('leiste.sprache_wechseln')}>

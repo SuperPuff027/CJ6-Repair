@@ -47,8 +47,11 @@ export interface SzenenFarben {
 
 export interface SzenenSteuerung {
   setzeFarben(farben: SzenenFarben): void;
-  /** Hebt ein Bauteil hervor und fliegt hin; null zeigt wieder den ganzen Jeep. */
-  waehle(id: ModellTeilId | null): void;
+  /**
+   * Hebt ein Bauteil hervor und fliegt hin; null zeigt wieder den ganzen Jeep.
+   * `linksVerdeckt`: Breite (px), die links vom Menü verdeckt ist; das Teil wird in der freien Fläche gezeigt.
+   */
+  waehle(id: ModellTeilId | null, linksVerdeckt?: number): void;
   zerstoere(): void;
 }
 
@@ -63,8 +66,10 @@ interface TeilDarstellung {
 interface Flug {
   vonKamera: Vector3;
   vonZiel: Vector3;
+  vonVersatz: number;
   nachKamera: Vector3;
   nachZiel: Vector3;
+  nachVersatz: number;
   start: number;
 }
 
@@ -159,14 +164,33 @@ export function erstelleSzene(
     return { kamera: START_ZIEL.clone().addScaledVector(START_RICHTUNG, abstand), ziel: START_ZIEL.clone() };
   };
 
-  const fliegeZu = (nachKamera: Vector3, nachZiel: Vector3) => {
+  // Verschiebt das Bild nach rechts (px), damit ein gewähltes Teil neben dem offenen Menü erscheint.
+  // Ändert sich nur bei einer Auswahl, nie beim Öffnen oder Schließen des Menüs.
+  let versatz = 0;
+  const wendeVersatzAn = () => {
+    const { clientWidth: breite, clientHeight: hoehe } = canvas;
+    if (versatz && breite && hoehe) kamera.setViewOffset(breite, hoehe, -versatz, 0, breite, hoehe);
+    else kamera.clearViewOffset();
+  };
+
+  const fliegeZu = (nachKamera: Vector3, nachZiel: Vector3, nachVersatz: number) => {
     steuerung.autoRotate = false;
     if (optionen.bewegungReduziert) {
       kamera.position.copy(nachKamera);
       steuerung.target.copy(nachZiel);
+      versatz = nachVersatz;
+      wendeVersatzAn();
       return;
     }
-    flug = { vonKamera: kamera.position.clone(), vonZiel: steuerung.target.clone(), nachKamera, nachZiel, start: performance.now() };
+    flug = {
+      vonKamera: kamera.position.clone(),
+      vonZiel: steuerung.target.clone(),
+      vonVersatz: versatz,
+      nachKamera,
+      nachZiel,
+      nachVersatz,
+      start: performance.now(),
+    };
   };
 
   // ----- Größe -----
@@ -175,6 +199,7 @@ export function erstelleSzene(
     if (!breite || !hoehe) return;
     renderer.setSize(breite, hoehe, false);
     kamera.aspect = breite / hoehe;
+    wendeVersatzAn();
     kamera.updateProjectionMatrix();
     if (gesamtansichtAnpassen) {
       const ansicht = gesamtansicht();
@@ -215,6 +240,8 @@ export function erstelleSzene(
       const t = sanft((jetzt - flug.start) / FLUGDAUER_MS);
       kamera.position.lerpVectors(flug.vonKamera, flug.nachKamera, t);
       steuerung.target.lerpVectors(flug.vonZiel, flug.nachZiel, t);
+      versatz = flug.vonVersatz + (flug.nachVersatz - flug.vonVersatz) * t;
+      wendeVersatzAn();
       if (t >= 1) flug = null;
     }
     steuerung.update();
@@ -228,20 +255,22 @@ export function erstelleSzene(
       farben = neu;
       darstellen();
     },
-    waehle(id) {
+    waehle(id, linksVerdeckt = 0) {
       if (id === gewaehlt) return;
       gewaehlt = id;
       gesamtansichtAnpassen = false;
       darstellen();
       if (id) {
+        const { clientWidth: breite, clientHeight: hoehe } = canvas;
+        const frei = Math.max(breite - linksVerdeckt, breite * 0.3);
         const huelle = teile.get(id)!.huelle;
         const mitte = huelle.getCenter(new Vector3());
         const groesse = huelle.getSize(new Vector3());
-        const ansicht = ansichtFuerTeil(mitte.toArray() as Vektor, groesse.toArray() as Vektor, kamera.aspect, BLICKWINKEL_GRAD);
-        fliegeZu(new Vector3(...ansicht.kamera), new Vector3(...ansicht.ziel));
+        const ansicht = ansichtFuerTeil(mitte.toArray() as Vektor, groesse.toArray() as Vektor, frei / hoehe, BLICKWINKEL_GRAD);
+        fliegeZu(new Vector3(...ansicht.kamera), new Vector3(...ansicht.ziel), (breite - frei) / 2);
       } else {
         const ansicht = gesamtansicht();
-        fliegeZu(ansicht.kamera, ansicht.ziel);
+        fliegeZu(ansicht.kamera, ansicht.ziel, 0);
       }
     },
     zerstoere() {

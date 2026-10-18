@@ -17,13 +17,21 @@ const KREUZ = (
   </svg>
 );
 
-export function Buehne(props: { thema: Thema; auswahl: ModellTeilId | null; waehle: (id: ModellTeilId | null) => void }) {
+export function Buehne(props: {
+  thema: Thema;
+  auswahl: ModellTeilId | null;
+  waehle: (id: ModellTeilId | null) => void;
+  menueOffen: boolean;
+}) {
   const { t } = useSprache();
   const leinwand = useRef<HTMLCanvasElement>(null);
   const szene = useRef<SzenenSteuerung | null>(null);
   // Die Szene wird nur einmal gebaut; der Rückruf soll trotzdem immer die aktuelle Funktion nutzen.
   const waehleAktuell = useRef(props.waehle);
   waehleAktuell.current = props.waehle;
+  // Nur bei einer neuen Auswahl gelesen: Öffnen oder Schließen des Menüs bewegt das Modell nicht.
+  const menueOffen = useRef(props.menueOffen);
+  menueOffen.current = props.menueOffen;
 
   useEffect(() => {
     const bewegungReduziert = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -45,7 +53,8 @@ export function Buehne(props: { thema: Thema; auswahl: ModellTeilId | null; waeh
   }, [props.thema]);
 
   useEffect(() => {
-    szene.current?.waehle(props.auswahl);
+    const menue = document.getElementById('flyout');
+    szene.current?.waehle(props.auswahl, menueOffen.current && menue ? menue.offsetWidth : 0);
   }, [props.auswahl]);
 
   return (

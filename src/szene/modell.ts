@@ -52,6 +52,40 @@ export const MODELL_TEIL_IDS = [
 ] as const;
 export type ModellTeilId = (typeof MODELL_TEIL_IDS)[number];
 
+/** Gruppe je Modellteil, für Listen ohne 3D-Geometrie (Flyout). Der Test prüft die Übereinstimmung mit baueModell(). */
+export const TEIL_GRUPPE: Readonly<Record<ModellTeilId, ModellGruppe>> = {
+  wanne: 'karosserie',
+  motorhaube: 'karosserie',
+  kotfluegel: 'karosserie',
+  kuehlergrill: 'karosserie',
+  frontscheibe: 'karosserie',
+  armaturenbrett: 'karosserie',
+  stossstangen: 'karosserie',
+  sitze: 'karosserie',
+  reserverad: 'karosserie',
+  motor: 'antrieb',
+  kuehler: 'antrieb',
+  getriebe: 'antrieb',
+  verteilergetriebe: 'antrieb',
+  kardanwellen: 'antrieb',
+  auspuff: 'antrieb',
+  rahmen: 'fahrwerk',
+  vorderachse: 'fahrwerk',
+  hinterachse: 'fahrwerk',
+  blattfedern: 'fahrwerk',
+  stossdaempfer: 'fahrwerk',
+  bremsen_vorne: 'fahrwerk',
+  bremsen_hinten: 'fahrwerk',
+  raeder: 'fahrwerk',
+  lenkung: 'fahrwerk',
+  benzintank: 'kraftstoff',
+  gastank: 'kraftstoff',
+  gasleitung: 'kraftstoff',
+  verdampfer: 'kraftstoff',
+  batterie: 'elektrik',
+  beleuchtung: 'elektrik',
+};
+
 export interface ModellTeil {
   id: ModellTeilId;
   gruppe: ModellGruppe;

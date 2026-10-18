@@ -1,6 +1,6 @@
 import { Box3 } from 'three';
 import { describe, expect, it } from 'vitest';
-import { baueModell, MODELL_GRUPPEN, MODELL_TEIL_IDS } from './modell';
+import { baueModell, MODELL_GRUPPEN, MODELL_TEIL_IDS, TEIL_GRUPPE } from './modell';
 
 const modell = baueModell();
 
@@ -22,6 +22,7 @@ describe('Outline-Modell', () => {
 
   it('ordnet jedes Teil einer bekannten Gruppe zu und hat Geometrie', () => {
     for (const teil of modell) {
+      expect(TEIL_GRUPPE[teil.id], teil.id).toBe(teil.gruppe);
       expect(MODELL_GRUPPEN, teil.id).toContain(teil.gruppe);
       expect(teil.geometrien.length, teil.id).toBeGreaterThan(0);
     }
