@@ -6,3 +6,6 @@ dev-dist/
 
 # Digitalisierte Handbücher, Teilekataloge, eigene Fotos: privat, nur lokal
 wissensbasis/
+
+# Lokale Claude-Einstellungen
+.claude/

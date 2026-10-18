@@ -1,29 +1,159 @@
-/* Vorläufig bis Schritt 2 (Design-Tokens hell/dunkel). */
+/*
+ * Design-Tokens. Heller Modus auf :root, dunkler Modus über die Systemeinstellung
+ * oder ausdrücklich über data-thema. Komponenten nutzen nur Tokens.
+ * --line: Outline-Linien des 3D-Modells (hell schwarz, dunkel hellblau), --rot: gewähltes Bauteil.
+ */
 :root {
-  color-scheme: light dark;
-  font-family: system-ui, sans-serif;
-  background: #eef0f2;
-  color: #14171a;
+  --bg: #eef0f2;
+  --fg: #14171a;
+  --gedaempft: #5d6670;
+  --line: #111418;
+  --line-schwach: #c3c9cf;
+  --rot: #d3261c;
+  --glas: rgba(238, 240, 242, 0.62);
+  --kante: rgba(20, 23, 26, 0.12);
+  --abdunkeln: 0.86;
+  --chip: rgba(20, 23, 26, 0.06);
+
+  --schrift: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --schrift-mono: ui-monospace, 'Cascadia Mono', 'Roboto Mono', Consolas, monospace;
+  --touch-min: 48px;
+  --rand: 16px;
+
+  color-scheme: light;
 }
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    background: #080c11;
-    color: #dce8f2;
+  :root:not([data-thema='hell']) {
+    --bg: #080c11;
+    --fg: #dce8f2;
+    --gedaempft: #7f93a5;
+    --line: #8fd0ff;
+    --line-schwach: #1d2a36;
+    --rot: #ff4a3d;
+    --glas: rgba(8, 12, 17, 0.55);
+    --kante: rgba(143, 208, 255, 0.14);
+    --abdunkeln: 0.62;
+    --chip: rgba(143, 208, 255, 0.08);
+    color-scheme: dark;
   }
+}
+
+:root[data-thema='dunkel'] {
+  --bg: #080c11;
+  --fg: #dce8f2;
+  --gedaempft: #7f93a5;
+  --line: #8fd0ff;
+  --line-schwach: #1d2a36;
+  --rot: #ff4a3d;
+  --glas: rgba(8, 12, 17, 0.55);
+  --kante: rgba(143, 208, 255, 0.14);
+  --abdunkeln: 0.62;
+  --chip: rgba(143, 208, 255, 0.08);
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
 }
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--schrift);
+  font-size: 15px;
+  -webkit-tap-highlight-color: transparent;
 }
-.start {
-  padding: max(24px, env(safe-area-inset-top)) 20px 24px;
-  max-width: 40rem;
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
 }
-.start h1 {
-  margin: 0;
+:focus-visible {
+  outline: 1.5px solid var(--line);
+  outline-offset: 2px;
+}
+
+/* App-Leiste: schwebt über der Bühne, nur die Knöpfe fangen Eingaben ab. */
+.leiste {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) var(--rand) 12px;
+  pointer-events: none;
+}
+.leiste > * {
+  pointer-events: auto;
+}
+.marke {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.marke-name {
   font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
-.untertitel {
-  margin-top: 4px;
-  opacity: 0.7;
+.marke-zusatz {
+  margin-top: 2px;
+  font-family: var(--schrift-mono);
+  font-size: 11px;
+  color: var(--gedaempft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.leiste-knoepfe {
+  display: flex;
+  gap: 8px;
+}
+.rund-knopf {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--kante);
+  background: var(--glas);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.rund-knopf:hover {
+  border-color: var(--line);
+}
+.rund-knopf svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+}
+.sprach-knopf {
+  font-family: var(--schrift-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+/* Bühne: hier sitzt ab Schritt 3 das 3D-Modell. */
+.buehne {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 var(--rand);
+}
+.hinweis {
+  max-width: 32rem;
+  text-align: center;
+  color: var(--gedaempft);
+  line-height: 1.5;
 }
