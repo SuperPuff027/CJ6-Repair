@@ -3,6 +3,7 @@ import { gruppenSchluessel, teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
 import { passtZurSuche } from '../logic/suche';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS, TEIL_GRUPPE, type ModellTeilId } from '../szene/modell';
+import { WissensbasisImport } from './WissensbasisImport';
 
 type Reiter = 'bauteile' | 'diagnose';
 
@@ -98,6 +99,7 @@ export function Flyout(props: {
             })}
           </section>
         ))}
+        {!anfrage && <WissensbasisImport />}
       </div>
 
       <div class="flyout-bereich" id="bereich-diagnose" role="tabpanel" aria-labelledby="reiter-diagnose" hidden={reiter !== 'diagnose'}>

@@ -1,4 +1,5 @@
 import type { Sprache } from '../logic/sprache';
+import type { FehlerCode, WissensbasisTabelle } from '../logic/wissensbasis';
 import type { ModellGruppe, ModellTeilId } from '../szene/modell';
 import { de, type Schluessel, type Uebersetzung } from './de';
 import { en } from './en';
@@ -29,4 +30,12 @@ export function teilSchluessel(id: ModellTeilId): Schluessel {
 
 export function gruppenSchluessel(gruppe: ModellGruppe): Schluessel {
   return `gruppe.${gruppe}` as Schluessel;
+}
+
+export function pruefSchluessel(code: FehlerCode): Schluessel {
+  return `pruef.${code}` as Schluessel;
+}
+
+export function tabellenSchluessel(tabelle: WissensbasisTabelle): Schluessel {
+  return `wissen.tabelle.${tabelle}` as Schluessel;
 }

@@ -397,3 +397,79 @@ button {
   font-size: 11px;
   color: var(--gedaempft);
 }
+
+/* Wissensbasis-Import unten im Reiter Bauteile */
+.wissen {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--kante);
+}
+.wissen .flyout-notiz {
+  margin: 0 0 12px;
+}
+.datei-knopf {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.datei-knopf input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.datei-knopf:focus-within {
+  outline: 1.5px solid var(--line);
+  outline-offset: 2px;
+}
+.wissen-meldung {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+.wissen-kasten {
+  padding: 12px;
+  border: 1px solid var(--kante);
+  border-radius: 8px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.wissen-kasten p {
+  margin: 0 0 8px;
+}
+.wissen-liste {
+  margin: 0 0 12px;
+}
+.wissen-liste dt {
+  font-weight: 500;
+}
+.wissen-liste dd {
+  margin: 0 0 6px;
+  color: var(--gedaempft);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.wissen-fehler {
+  border-color: var(--rot);
+}
+.wissen-fehler ul {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-family: var(--schrift-mono);
+  font-size: 11.5px;
+  overflow-wrap: anywhere;
+}
+.knopf-reihe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.voll-knopf {
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 500;
+}

@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { de } from './de';
 import { en } from './en';
+import { FEHLER_CODES, WISSENSBASIS_TABELLEN } from '../logic/wissensbasis';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS } from '../szene/modell';
-import { erstelleUebersetzer, gruppenSchluessel, teilSchluessel } from './index';
+import { erstelleUebersetzer, gruppenSchluessel, pruefSchluessel, tabellenSchluessel, teilSchluessel } from './index';
 
 describe('Übersetzungen', () => {
   it('haben in allen Sprachen genau dieselben Schlüssel', () => {
@@ -41,5 +42,12 @@ describe('Namen der Modellteile', () => {
   it('gibt es für jedes Teil und jede Gruppe', () => {
     for (const id of MODELL_TEIL_IDS) expect(de, id).toHaveProperty([teilSchluessel(id)]);
     for (const g of MODELL_GRUPPEN) expect(de, g).toHaveProperty([gruppenSchluessel(g)]);
+  });
+});
+
+describe('Texte zum Wissensbasis-Import', () => {
+  it('gibt es für jeden Prüffehler und jede Tabelle', () => {
+    for (const code of FEHLER_CODES) expect(de, code).toHaveProperty([pruefSchluessel(code)]);
+    for (const tabelle of WISSENSBASIS_TABELLEN) expect(de, tabelle).toHaveProperty([tabellenSchluessel(tabelle)]);
   });
 });

@@ -1,0 +1,59 @@
+{
+  "format": "cj6-wissensbasis",
+  "version": 1,
+  "motor_varianten": [
+    {
+      "id": "beispiel-motor",
+      "name": "BEISPIEL Reihensechser",
+      "zylinder": 6,
+      "hubraum_l": 1,
+      "bauart": "BEISPIEL",
+      "baujahre": "BEISPIEL",
+      "erkennungsmerkmale": ["BEISPIEL: Motorcode auf dem Typenschild"]
+    }
+  ],
+  "baugruppen": [
+    { "id": "bremsen", "name": "BEISPIEL Bremsen", "eltern_id": null },
+    { "id": "bremsen-vorn", "name": "BEISPIEL Bremsen vorne", "eltern_id": "bremsen", "modell_teil_id": "bremsen_vorne" }
+  ],
+  "bauteile": [
+    {
+      "id": "bremstrommel-vorn",
+      "baugruppe_id": "bremsen-vorn",
+      "name": "BEISPIEL Bremstrommel vorne",
+      "modell_teil_id": "bremsen_vorne",
+      "teilenummern": [{ "nummer": "BEISPIEL-0000", "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" } }],
+      "motor_varianten": [],
+      "stichwoerter": ["Bremse", "Trommel", "vorne"]
+    }
+  ],
+  "anleitungen": [
+    {
+      "id": "bremstrommel-vorn-pruefen",
+      "bauteil_id": "bremstrommel-vorn",
+      "titel": "BEISPIEL Bremstrommel prüfen",
+      "geprueft": false,
+      "quelle": null,
+      "schritte": [
+        {
+          "text": "BEISPIEL: Fahrzeug sichern, Rad abnehmen.",
+          "werkzeug": ["BEISPIEL Radmutternschlüssel"],
+          "sollwerte": [
+            { "groesse": "BEISPIEL Anzugsmoment", "wert": 0, "einheit": "Nm", "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" } }
+          ],
+          "warnung": "BEISPIEL: Keine echten Werte. Nicht danach arbeiten."
+        }
+      ]
+    }
+  ],
+  "symptom_knoten": [
+    {
+      "id": "start",
+      "frage": "BEISPIEL: Zieht das Fahrzeug beim Bremsen zur Seite?",
+      "antworten": [
+        { "text": "Ja", "befund_bauteil_id": "bremstrommel-vorn" },
+        { "text": "Nein", "pruefschritt": "BEISPIEL: Bremsflüssigkeitsstand prüfen" }
+      ]
+    }
+  ]
+}
