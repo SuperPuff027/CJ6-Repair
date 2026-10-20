@@ -125,6 +125,7 @@ export function Aufgaben(props: {
   /** Vom Bauteildetail aus geöffnet: Formular gleich mit diesem Teil anzeigen */
   neuFuer: ModellTeilId | null | undefined;
   neuGeoeffnet: () => void;
+  oeffneAnleitung: (anleitungId: string, aufgabeId: string) => void;
 }) {
   const { t, sprache } = useSprache();
   const [formular, setzeFormular] = useState<{ teil: ModellTeilId | null } | null>(null);
@@ -195,6 +196,11 @@ export function Aufgaben(props: {
           </div>
         ) : (
           <div class="notiz-aktionen">
+            {a.anleitung_id && a.status !== 'erledigt' && (
+              <button class="text-knopf stark" onClick={() => props.oeffneAnleitung(a.anleitung_id!, a.id)}>
+                {t('anleitung.oeffnen')}
+              </button>
+            )}
             {a.status === 'offen' && (
               <button class="text-knopf" onClick={() => aendereStatus(a, 'in_arbeit')}>
                 {t('aufgabe.beginnen')}

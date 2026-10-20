@@ -3,8 +3,9 @@ import { gruppenSchluessel, teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
 import { db } from '../db/datenbank';
 import { ladeAktive } from '../db/repo';
+import { anleitungenFuerTeil } from '../logic/anleitung';
 import { sortiereAufgaben } from '../logic/aufgaben';
-import type { Aufgabe } from '../model/typen';
+import type { Anleitung, Aufgabe, Bauteil } from '../model/typen';
 import { zaehleJeBezug } from '../logic/bezug';
 import { passtZurSuche } from '../logic/suche';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS, TEIL_GRUPPE, type ModellTeilId } from '../szene/modell';
@@ -29,6 +30,8 @@ export function Flyout(props: {
   schliessen: () => void;
   auswahl: ModellTeilId | null;
   waehle: (id: ModellTeilId | null) => void;
+  oeffneAnleitung: (anleitungId: string, aufgabeId: string | null) => void;
+  aufgabenStand: number;
 }) {
   const { t } = useSprache();
   const [reiter, setzeReiter] = useState<Reiter>('bauteile');
@@ -47,11 +50,19 @@ export function Flyout(props: {
   const [neueAufgabeFuer, setzeNeueAufgabeFuer] = useState<ModellTeilId | null | undefined>(undefined);
   const ladeAufgaben = () => ladeAktive(db.aufgaben).then(setzeAufgaben, (e) => console.error('Aufgaben nicht lesbar', e));
 
+  const [wissen, setzeWissen] = useState<{ bauteile: Bauteil[]; anleitungen: Anleitung[] }>({ bauteile: [], anleitungen: [] });
+  const ladeWissen = () =>
+    Promise.all([ladeAktive(db.bauteile), ladeAktive(db.anleitungen)]).then(
+      ([bauteile, anleitungen]) => setzeWissen({ bauteile, anleitungen }),
+      (e) => console.error('Wissensbasis nicht lesbar', e),
+    );
+
   useEffect(() => {
     if (!props.offen) return;
     void zaehleNotizen();
     void ladeAufgaben();
-  }, [props.offen]);
+    void ladeWissen();
+  }, [props.offen, props.aufgabenStand]);
 
   // Am Laptop gleich tippen können; am Handy würde das die Tastatur über das Menü schieben.
   useEffect(() => {
@@ -122,6 +133,21 @@ export function Flyout(props: {
                   </button>
                   {gewaehlt && (
                     <div class="teil-detail">
+                      {anleitungenFuerTeil(id, wissen.bauteile, wissen.anleitungen).length > 0 && (
+                        <>
+                          <h4 class="detail-titel">{t('anleitung.titel_liste')}</h4>
+                          <ul class="detail-anleitungen">
+                            {anleitungenFuerTeil(id, wissen.bauteile, wissen.anleitungen).map((a) => (
+                              <li key={a.id}>
+                                <button class="text-knopf" onClick={() => props.oeffneAnleitung(a.id, null)}>
+                                  {a.titel}
+                                </button>
+                                {!a.geprueft && <span class="chip prio sicherheit">{t('anleitung.ungeprueft_kurz')}</span>}
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
                       <h4 class="detail-titel">{t('reiter.aufgaben')}</h4>
                       <ul class="detail-aufgaben">
                         {sortiereAufgaben(aufgaben.filter((a) => a.modell_teil_id === id && a.status !== 'erledigt')).map((a) => (
@@ -163,6 +189,7 @@ export function Flyout(props: {
           waehle={(teil) => props.waehle(teil)}
           neuFuer={neueAufgabeFuer}
           neuGeoeffnet={() => setzeNeueAufgabeFuer(undefined)}
+          oeffneAnleitung={props.oeffneAnleitung}
         />
       </div>
 

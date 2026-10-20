@@ -23,3 +23,23 @@ export function schreibe(schluessel: Schluessel, wert: string): void {
     console.error('Einstellung konnte nicht gespeichert werden', fehler);
   }
 }
+
+const SCHRITT_PRAEFIX = 'cj6.schritt.';
+
+/** Zuletzt geöffneter Anleitungsschritt einer Aufgabe auf diesem Gerät. */
+export function liesSchritt(aufgabeId: string): number | null {
+  try {
+    const wert = localStorage.getItem(SCHRITT_PRAEFIX + aufgabeId);
+    return wert === null ? null : Number(wert) || 0;
+  } catch {
+    return null;
+  }
+}
+
+export function schreibeSchritt(aufgabeId: string, schritt: number): void {
+  try {
+    localStorage.setItem(SCHRITT_PRAEFIX + aufgabeId, String(schritt));
+  } catch {
+    // Nur eine Bequemlichkeit; ohne Speicher beginnt die Anleitung beim ersten Schritt.
+  }
+}
