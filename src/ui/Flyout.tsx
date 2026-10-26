@@ -13,6 +13,7 @@ import { Aufgaben } from './Aufgaben';
 import { FahrzeugProfil } from './FahrzeugProfil';
 import { FotoAblage } from './FotoAblage';
 import { Maengel } from './Maengel';
+import { Messwerte } from './Messwerte';
 import { Notizen } from './Notizen';
 import { WissensbasisImport } from './WissensbasisImport';
 
@@ -196,13 +197,10 @@ export function Flyout(props: {
       <div class="flyout-bereich" id="bereich-diagnose" role="tabpanel" aria-labelledby="reiter-diagnose" hidden={reiter !== 'diagnose'}>
         <h3 class="gruppe-titel">{t('diagnose.mangel')}</h3>
         <Maengel waehle={(teil) => props.waehle(teil)} beiNeuerAufgabe={ladeAufgaben} />
+        <h3 class="gruppe-titel diagnose-weitere">{t('diagnose.messwerte')}</h3>
+        {reiter === 'diagnose' && <Messwerte />}
         <h3 class="gruppe-titel diagnose-weitere">{t('diagnose.weitere')}</h3>
-        {(
-          [
-            ['diagnose.messwerte', 'diagnose.messwerte_info'],
-            ['diagnose.symptome', 'diagnose.symptome_info'],
-          ] as const
-        ).map(([titel, info]) => (
+        {([['diagnose.symptome', 'diagnose.symptome_info']] as const).map(([titel, info]) => (
           <div key={titel} class="diagnose-eintrag" aria-disabled="true">
             <span>
               <span class="diagnose-titel">{t(titel)}</span>

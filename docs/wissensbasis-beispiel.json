@@ -10,15 +10,33 @@
       "bauart": "BEISPIEL",
       "baujahr_von": 1900,
       "baujahr_bis": 1901,
-      "motorcode_buchstaben": ["X"],
-      "vin_buchstaben": ["X"],
-      "erkennungsmerkmale": ["BEISPIEL: Motorcode auf dem Typenschild"],
-      "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" }
+      "motorcode_buchstaben": [
+        "X"
+      ],
+      "vin_buchstaben": [
+        "X"
+      ],
+      "erkennungsmerkmale": [
+        "BEISPIEL: Motorcode auf dem Typenschild"
+      ],
+      "quelle": {
+        "dokument": "BEISPIEL – kein echtes Dokument",
+        "stelle": "S. 0"
+      }
     }
   ],
   "baugruppen": [
-    { "id": "bremsen", "name": "BEISPIEL Bremsen", "eltern_id": null },
-    { "id": "bremsen-vorn", "name": "BEISPIEL Bremsen vorne", "eltern_id": "bremsen", "modell_teil_id": "bremsen_vorne" }
+    {
+      "id": "bremsen",
+      "name": "BEISPIEL Bremsen",
+      "eltern_id": null
+    },
+    {
+      "id": "bremsen-vorn",
+      "name": "BEISPIEL Bremsen vorne",
+      "eltern_id": "bremsen",
+      "modell_teil_id": "bremsen_vorne"
+    }
   ],
   "bauteile": [
     {
@@ -26,9 +44,21 @@
       "baugruppe_id": "bremsen-vorn",
       "name": "BEISPIEL Bremstrommel vorne",
       "modell_teil_id": "bremsen_vorne",
-      "teilenummern": [{ "nummer": "BEISPIEL-0000", "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" } }],
+      "teilenummern": [
+        {
+          "nummer": "BEISPIEL-0000",
+          "quelle": {
+            "dokument": "BEISPIEL – kein echtes Dokument",
+            "stelle": "S. 0"
+          }
+        }
+      ],
       "motor_varianten": [],
-      "stichwoerter": ["Bremse", "Trommel", "vorne"]
+      "stichwoerter": [
+        "Bremse",
+        "Trommel",
+        "vorne"
+      ]
     }
   ],
   "anleitungen": [
@@ -45,16 +75,34 @@
           "menge": 1,
           "einheit": "Stück",
           "teilenummer": "BEISPIEL-0000",
-          "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" }
+          "quelle": {
+            "dokument": "BEISPIEL – kein echtes Dokument",
+            "stelle": "S. 0"
+          }
         },
-        { "art": "verbrauch", "bezeichnung": "BEISPIEL Bremsenreiniger", "menge": 1, "einheit": "Dose" }
+        {
+          "art": "verbrauch",
+          "bezeichnung": "BEISPIEL Bremsenreiniger",
+          "menge": 1,
+          "einheit": "Dose"
+        }
       ],
       "schritte": [
         {
           "text": "BEISPIEL: Fahrzeug sichern, Rad abnehmen.",
-          "werkzeug": ["BEISPIEL Radmutternschlüssel"],
+          "werkzeug": [
+            "BEISPIEL Radmutternschlüssel"
+          ],
           "sollwerte": [
-            { "groesse": "BEISPIEL Anzugsmoment", "wert": 0, "einheit": "Nm", "quelle": { "dokument": "BEISPIEL – kein echtes Dokument", "stelle": "S. 0" } }
+            {
+              "groesse": "BEISPIEL Anzugsmoment",
+              "wert": 0,
+              "einheit": "Nm",
+              "quelle": {
+                "dokument": "BEISPIEL – kein echtes Dokument",
+                "stelle": "S. 0"
+              }
+            }
           ],
           "warnung": "BEISPIEL: Keine echten Werte. Nicht danach arbeiten."
         }
@@ -66,9 +114,31 @@
       "id": "start",
       "frage": "BEISPIEL: Zieht das Fahrzeug beim Bremsen zur Seite?",
       "antworten": [
-        { "text": "Ja", "befund_bauteil_id": "bremstrommel-vorn" },
-        { "text": "Nein", "pruefschritt": "BEISPIEL: Bremsflüssigkeitsstand prüfen" }
+        {
+          "text": "Ja",
+          "befund_bauteil_id": "bremstrommel-vorn"
+        },
+        {
+          "text": "Nein",
+          "pruefschritt": "BEISPIEL: Bremsflüssigkeitsstand prüfen"
+        }
       ]
+    }
+  ],
+  "messvorgaben": [
+    {
+      "id": "beispiel-kompression",
+      "groesse": "kompression",
+      "motor_variante_id": "beispiel-motor",
+      "min": 1,
+      "max": 2,
+      "max_abweichung_prozent": 1,
+      "einheit": "bar",
+      "hinweis": "BEISPIEL: Keine echten Werte.",
+      "quelle": {
+        "dokument": "BEISPIEL – kein echtes Dokument",
+        "stelle": "S. 0"
+      }
     }
   ]
 }

@@ -166,3 +166,25 @@ describe('Material in Anleitungen', () => {
     ]);
   });
 });
+
+describe('Messvorgaben', () => {
+  it('werden gelesen und geprüft', () => {
+    expect(gueltig(beispiel).messvorgaben[0]).toMatchObject({ groesse: 'kompression', min: 1, max: 2, betriebsart: null });
+    const d = kopie() as unknown as { messvorgaben: Record<string, unknown>[] };
+    d.messvorgaben[0]!.groesse = 'luftdruck';
+    d.messvorgaben.push({ id: 'b', groesse: 'kompression', einheit: 'V', min: 5, max: 3, betriebsart: 'diesel' });
+    expect(codes(d)).toEqual([
+      'falscher_typ messvorgaben[0].groesse',
+      'falscher_typ messvorgaben[1].einheit',
+      'falscher_typ messvorgaben[1].betriebsart',
+      'falscher_typ messvorgaben[1].max',
+      'quelle_fehlt messvorgaben[1].quelle',
+    ]);
+  });
+
+  it('dürfen auf Motoren aus einer anderen Datei verweisen', () => {
+    const d = kopie() as unknown as { messvorgaben: Record<string, unknown>[] };
+    d.messvorgaben[0]!.motor_variante_id = 'amc-232';
+    expect(codes(d)).toEqual([]);
+  });
+});

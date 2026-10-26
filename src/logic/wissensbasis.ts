@@ -6,6 +6,7 @@ import type {
   Baugruppe,
   Bauteil,
   Material,
+  Messvorgabe,
   MitId,
   MotorVariante,
   Quelle,
@@ -15,11 +16,12 @@ import type {
   Teilenummer,
 } from '../model/typen';
 import { MODELL_TEIL_IDS, type ModellTeilId } from '../szene/modell';
+import { EINHEITEN, istMessgroesse } from './messwerte';
 
 export const WISSENSBASIS_FORMAT = 'cj6-wissensbasis';
 export const WISSENSBASIS_VERSION = 1;
 
-export const WISSENSBASIS_TABELLEN = ['motor_varianten', 'baugruppen', 'bauteile', 'anleitungen', 'symptom_knoten'] as const;
+export const WISSENSBASIS_TABELLEN = ['motor_varianten', 'baugruppen', 'bauteile', 'anleitungen', 'symptom_knoten', 'messvorgaben'] as const;
 export type WissensbasisTabelle = (typeof WISSENSBASIS_TABELLEN)[number];
 
 type OhneSync<T> = Omit<T, 'aktualisiert_am' | 'geloescht'>;
@@ -32,6 +34,7 @@ export interface Wissensbasis {
   bauteile: OhneSync<Bauteil>[];
   anleitungen: OhneSync<Anleitung>[];
   symptom_knoten: OhneSync<SymptomKnoten>[];
+  messvorgaben: OhneSync<Messvorgabe>[];
 }
 
 export const FEHLER_CODES = [
@@ -297,8 +300,37 @@ export function pruefeWissensbasis(roh: unknown): PruefErgebnis {
     return [{ id: l.text(o, 'id', p), frage: l.text(o, 'frage', p), antworten }];
   });
 
+  const messvorgaben = l.liste(wurzel, 'messvorgaben', '', false).flatMap((w, i) => {
+    const p = `messvorgaben[${i}]`;
+    const o = l.objekt(w, p);
+    if (!o) return [];
+    const groesse = l.text(o, 'groesse', p);
+    if (groesse && !istMessgroesse(groesse)) l.melde('falscher_typ', `${p}.groesse`);
+    const einheit = l.text(o, 'einheit', p);
+    if (istMessgroesse(groesse) && einheit && !EINHEITEN[groesse].includes(einheit)) l.melde('falscher_typ', `${p}.einheit`);
+    const betriebsart = l.textOderNull(o, 'betriebsart', p);
+    if (betriebsart !== null && betriebsart !== 'benzin' && betriebsart !== 'gas') l.melde('falscher_typ', `${p}.betriebsart`);
+    const min = l.zahlOderNull(o, 'min', p);
+    const max = l.zahlOderNull(o, 'max', p);
+    if (min !== null && max !== null && min > max) l.melde('falscher_typ', `${p}.max`);
+    // Ein Sollwert ist eine technische Angabe: Quelle Pflicht.
+    const quelle = l.quelle(o, 'quelle', p, true);
+    const vorgabe: Omit<OhneSync<Messvorgabe>, 'quelle'> = {
+      id: l.text(o, 'id', p),
+      groesse,
+      motor_variante_id: l.textOderNull(o, 'motor_variante_id', p),
+      betriebsart: betriebsart === 'benzin' || betriebsart === 'gas' ? betriebsart : null,
+      min,
+      max,
+      max_abweichung_prozent: l.zahlOderNull(o, 'max_abweichung_prozent', p),
+      einheit,
+      hinweis: l.textOderNull(o, 'hinweis', p),
+    };
+    return quelle ? [{ ...vorgabe, quelle }] : [];
+  });
+
   const enthalten = WISSENSBASIS_TABELLEN.filter((t) => wurzel[t] !== undefined);
-  const daten: Wissensbasis = { enthalten, motor_varianten, baugruppen, bauteile, anleitungen, symptom_knoten };
+  const daten: Wissensbasis = { enthalten, motor_varianten, baugruppen, bauteile, anleitungen, symptom_knoten, messvorgaben };
   pruefeVerweise(daten, l);
   return l.fehler.length ? { ok: false, fehler: l.fehler } : { ok: true, daten };
 }
@@ -313,11 +345,13 @@ function ids<T extends { id: string }>(liste: readonly T[], tabelle: string, l: 
 }
 
 function pruefeVerweise(d: Wissensbasis, l: Leser) {
-  const motoren = ids(d.motor_varianten, 'motor_varianten', l);
+  // Motor-IDs werden nicht gegen die Datei geprüft: sie dürfen auf die Startdatei zeigen (z. B. „amc-232“).
+  ids(d.motor_varianten, 'motor_varianten', l);
   const gruppen = ids(d.baugruppen, 'baugruppen', l);
   const teile = ids(d.bauteile, 'bauteile', l);
   ids(d.anleitungen, 'anleitungen', l);
   const knoten = ids(d.symptom_knoten, 'symptom_knoten', l);
+  ids(d.messvorgaben, 'messvorgaben', l);
 
   d.baugruppen.forEach((g, i) => {
     if (g.eltern_id && !gruppen.has(g.eltern_id)) l.melde('verweis_fehlt', `baugruppen[${i}].eltern_id`);
@@ -338,9 +372,6 @@ function pruefeVerweise(d: Wissensbasis, l: Leser) {
   });
   d.bauteile.forEach((t, i) => {
     if (t.baugruppe_id && !gruppen.has(t.baugruppe_id)) l.melde('verweis_fehlt', `bauteile[${i}].baugruppe_id`);
-    t.motor_varianten.forEach((m, j) => {
-      if (!motoren.has(m)) l.melde('verweis_fehlt', `bauteile[${i}].motor_varianten[${j}]`);
-    });
   });
   d.anleitungen.forEach((a, i) => {
     if (a.bauteil_id && !teile.has(a.bauteil_id)) l.melde('verweis_fehlt', `anleitungen[${i}].bauteil_id`);

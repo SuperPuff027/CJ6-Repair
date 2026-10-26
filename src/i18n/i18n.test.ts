@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { de } from './de';
 import { en } from './en';
+import { MESSGROESSEN } from '../logic/messwerte';
 import { GRUND_CODES } from '../logic/motorerkennung';
 import { FEHLER_CODES, WISSENSBASIS_TABELLEN } from '../logic/wissensbasis';
 import { MODELL_GRUPPEN, MODELL_TEIL_IDS } from '../szene/modell';
@@ -56,5 +57,11 @@ describe('Texte zum Wissensbasis-Import', () => {
 describe('Texte zur Motorerkennung', () => {
   it('gibt es für jeden Grund', () => {
     for (const code of GRUND_CODES) expect(de, code).toHaveProperty([`grund.${code}`]);
+  });
+});
+
+describe('Texte zu Messwerten', () => {
+  it('gibt es für jede Messgröße', () => {
+    for (const g of MESSGROESSEN) expect(de, g).toHaveProperty([`messgroesse.${g}`]);
   });
 });

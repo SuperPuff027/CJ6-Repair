@@ -30,6 +30,8 @@ export interface Quelle {
 export const FAHRZEUG_ID = 'fahrzeug';
 
 export type Kraftstoff = 'benzin' | 'bivalent_lpg';
+/** Womit der Motor bei einer Messung lief */
+export type Betriebsart = 'benzin' | 'gas';
 export type MotorBestaetigung = 'motorcode' | 'vin' | 'gussnummer';
 
 export interface Gasanlage {
@@ -157,6 +159,24 @@ export interface Anleitung extends MitId {
   quelle: Quelle | null;
 }
 
+/** Sollwert für eine Messung (aus dem Handbuch, mit Quelle). */
+export interface Messvorgabe extends MitId {
+  /** Messgröße, siehe MESSGROESSEN */
+  groesse: string;
+  /** null = gilt für alle Motoren */
+  motor_variante_id: string | null;
+  /** null = gilt für Benzin und Gas */
+  betriebsart: Betriebsart | null;
+  min: number | null;
+  max: number | null;
+  /** Nur Kompression: erlaubte Abweichung zwischen den Zylindern in Prozent */
+  max_abweichung_prozent: number | null;
+  einheit: string;
+  /** z. B. „Motor warm, Drosselklappe offen“ */
+  hinweis: string | null;
+  quelle: Quelle;
+}
+
 export interface SymptomAntwort {
   text: string;
   naechster_id: string | null;
@@ -227,12 +247,14 @@ export interface Notiz extends MitId {
 export interface Messung extends MitId {
   bauteil_id: string | null;
   modell_teil_id: ModellTeilId | null;
-  /** z. B. „kompression“, „zuendzeitpunkt“, „spannung“ */
+  /** Messgröße, siehe MESSGROESSEN (z. B. „kompression“) */
   groesse: string;
+  /** Zylinder 1–n bei Messungen je Zylinder, sonst null */
   zylinder: number | null;
   wert: number;
   einheit: string;
-  kraftstoff: Kraftstoff | null;
+  betriebsart: Betriebsart | null;
+  /** Gemeinsamer Zeitpunkt aller Werte einer Messreihe (z. B. Kompression aller Zylinder) */
   gemessen_am: string;
 }
 

@@ -11,6 +11,7 @@ import type {
   Listenposten,
   LogbuchEintrag,
   Messung,
+  Messvorgabe,
   MotorVariante,
   Notiz,
   SensorMesswert,
@@ -30,6 +31,7 @@ export class CJ6Datenbank extends Dexie {
   bauteile!: Table<Bauteil, string>;
   anleitungen!: Table<Anleitung, string>;
   symptom_knoten!: Table<SymptomKnoten, string>;
+  messvorgaben!: Table<Messvorgabe, string>;
 
   // Werkstatt
   aufgaben!: Table<Aufgabe, string>;
@@ -67,6 +69,8 @@ export class CJ6Datenbank extends Dexie {
       kosten: 'id, aufgabe_id',
       sensor_messwerte: 'id, sensor, zeitpunkt',
     });
+    // v2: Sollwerte für Messungen (Wissensbasis); Messungen nach Betriebsart statt Kraftstoff
+    this.version(2).stores({ messvorgaben: 'id, groesse, motor_variante_id' });
   }
 }
 

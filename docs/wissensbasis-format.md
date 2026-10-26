@@ -10,7 +10,7 @@ Die echte Datei liegt im privaten Ordner `wissensbasis/` und kommt nie ins Repo.
 - Eine Anleitung mit `"geprueft": true` braucht ebenfalls eine Quelle. Ungeprüfte Anleitungen zeigt die App deutlich als ungeprüft.
 - **IDs vergibst du selbst** (z. B. `"bremstrommel-vorn"`). Sie müssen pro Liste eindeutig sein und dürfen sich später nicht ändern: Beim erneuten Import werden Einträge mit gleicher ID aktualisiert.
 - **Jede Liste in der Datei ersetzt die gleichnamige Liste in der App.** Einträge, die darin fehlen, werden entfernt (weich gelöscht; eigene Notizen, Fotos und Aufgaben bleiben erhalten). Unveränderte Einträge bleiben unberührt. **Listen, die in der Datei gar nicht vorkommen, bleiben unverändert** – eine Datei nur mit `motor_varianten` ändert also nichts an Bauteilen oder Anleitungen.
-- Verweise (`baugruppe_id`, `bauteil_id` usw.) müssen innerhalb derselben Datei aufgehen.
+- Verweise (`baugruppe_id`, `bauteil_id` usw.) müssen innerhalb derselben Datei aufgehen. Ausnahme: Motor-IDs dürfen auf die Startdatei zeigen.
 - Vor dem Import zeigt die App, was neu, geändert und entfernt wird. Erst nach „Importieren“ wird gespeichert, und zwar ganz oder gar nicht.
 
 ## Aufbau
@@ -23,7 +23,8 @@ Die echte Datei liegt im privaten Ordner `wissensbasis/` und kommt nie ins Repo.
   "baugruppen": [],
   "bauteile": [],
   "anleitungen": [],
-  "symptom_knoten": []
+  "symptom_knoten": [],
+  "messvorgaben": []
 }
 ```
 
@@ -84,6 +85,24 @@ Ein Material: `art` (`"teil"` oder `"verbrauch"`), `bezeichnung`, `menge` (grö�
 | --- | --- | --- |
 | `id`, `frage` | Text | |
 | `antworten` | Liste | jede Antwort: `text` und mindestens eines von `naechster_id` (nächste Frage), `befund_bauteil_id` (vermutetes Bauteil) oder `pruefschritt` (was zu prüfen ist) |
+
+### messvorgaben
+
+Sollwerte für den Reiter Diagnose → Messwerte. Ohne Vorgabe speichert die App Messungen trotzdem, bewertet sie aber nicht.
+
+| Feld | Typ | Bedeutung |
+| --- | --- | --- |
+| `id` | Text | eigene ID |
+| `groesse` | Messgröße | `kompression`, `zuendzeitpunkt`, `schliesswinkel`, `batteriespannung`, `ladespannung`, `leerlaufdrehzahl`, `oeldruck` |
+| `einheit` | Text | je Messgröße: Kompression und Öldruck `bar` oder `psi`, Zündzeitpunkt `° v. OT`, Schließwinkel `°`, Spannungen `V`, Drehzahl `1/min` |
+| `min?`, `max?` | Zahl | erlaubter Bereich (mindestens eines) |
+| `max_abweichung_prozent?` | Zahl | nur Kompression: erlaubte Abweichung zwischen den Zylindern |
+| `motor_variante_id?` | Motor-ID | weglassen = gilt für alle Motoren |
+| `betriebsart?` | `benzin` oder `gas` | weglassen = gilt für beide |
+| `hinweis?` | Text | Messbedingungen, z. B. „Motor warm“ |
+| `quelle` | Quelle | Pflicht |
+
+Motor-IDs (hier und in `bauteile.motor_varianten`) dürfen auf Motoren aus der Startdatei zeigen, z. B. `amc-232`.
 
 ## Modellteile
 
