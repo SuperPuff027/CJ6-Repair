@@ -1305,3 +1305,54 @@ select.eingabe {
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
+
+/* Symptom-Baum */
+.symptom-weg {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--gedaempft);
+}
+.symptom-weg strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+.symptom-frage {
+  margin: 4px 0 10px;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.antworten {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.antwort-knopf {
+  min-height: 52px;
+  padding: 10px 14px;
+  border: 1px solid var(--kante);
+  border-radius: 10px;
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.antwort-knopf:hover {
+  border-color: var(--line);
+}
+.symptom-steuerung {
+  align-items: center;
+  margin-top: 6px;
+}
+.befund {
+  margin-bottom: 10px;
+}
+.befund .detail-titel {
+  margin: 0 0 2px;
+}
+.befund-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}

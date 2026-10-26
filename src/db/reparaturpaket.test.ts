@@ -47,3 +47,11 @@ describe('Reparaturpaket in der Datenbank', () => {
     expect(await ladeEinkaufsliste()).toEqual([]);
   });
 });
+
+describe('Aufgabentitel', () => {
+  it('nimmt einen eigenen kurzen Titel und behält den ganzen Text als Mangeltext', async () => {
+    await legeReparaturpaketAn(await planeReparaturpaket([{ ...MANGEL, text: 'Weg: A · B · C', titel: 'C' }]));
+    const [aufgabe] = await ladeAktive(db.aufgaben);
+    expect(aufgabe).toMatchObject({ titel: 'C', mangel_text: 'Weg: A · B · C' });
+  });
+});

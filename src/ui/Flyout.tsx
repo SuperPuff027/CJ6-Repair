@@ -15,6 +15,7 @@ import { FotoAblage } from './FotoAblage';
 import { Maengel } from './Maengel';
 import { Messwerte } from './Messwerte';
 import { Notizen } from './Notizen';
+import { SymptomBaum } from './SymptomBaum';
 import { WissensbasisImport } from './WissensbasisImport';
 
 type Reiter = 'bauteile' | 'aufgaben' | 'diagnose' | 'fahrzeug';
@@ -199,16 +200,8 @@ export function Flyout(props: {
         <Maengel waehle={(teil) => props.waehle(teil)} beiNeuerAufgabe={ladeAufgaben} />
         <h3 class="gruppe-titel diagnose-weitere">{t('diagnose.messwerte')}</h3>
         {reiter === 'diagnose' && <Messwerte />}
-        <h3 class="gruppe-titel diagnose-weitere">{t('diagnose.weitere')}</h3>
-        {([['diagnose.symptome', 'diagnose.symptome_info']] as const).map(([titel, info]) => (
-          <div key={titel} class="diagnose-eintrag" aria-disabled="true">
-            <span>
-              <span class="diagnose-titel">{t(titel)}</span>
-              <span class="diagnose-info">{t(info)}</span>
-            </span>
-            <span class="bald">{t('diagnose.bald')}</span>
-          </div>
-        ))}
+        <h3 class="gruppe-titel diagnose-weitere">{t('diagnose.symptome')}</h3>
+        {reiter === 'diagnose' && <SymptomBaum waehle={(teil) => props.waehle(teil)} beiNeuerAufgabe={ladeAufgaben} />}
       </div>
 
       <div class="flyout-bereich" id="bereich-fahrzeug" role="tabpanel" aria-labelledby="reiter-fahrzeug" hidden={reiter !== 'fahrzeug'}>

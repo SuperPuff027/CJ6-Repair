@@ -25,7 +25,7 @@ export async function legeReparaturpaketAn(paket: Reparaturpaket): Promise<void>
     for (const p of paket.pakete) {
       const aufgabe = neuerDatensatz<Aufgabe>(
         {
-          titel: p.mangel.text,
+          titel: p.mangel.titel ?? p.mangel.text,
           bauteil_id: p.bauteile[0]?.id ?? null,
           modell_teil_id: p.mangel.teil,
           anleitung_id: p.anleitung?.id ?? null,

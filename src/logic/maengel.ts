@@ -74,6 +74,12 @@ const HINTEN = ['hinten', 'hinter', 'heck', 'rear'];
 /** Gasgeruch ist ein Sicherheitsfall (CLAUDE.md): Diagnose abbrechen. */
 const GASGERUCH = ['gasgeruch', 'riecht nach gas', 'gas riecht', 'gas stinkt', 'stinkt nach gas', 'nach gas riecht', 'smell gas', 'smells of gas', 'smell of gas', 'lpg smell'];
 
+/** Erwähnt der Text Gasgeruch? Dann ist es ein Sicherheitsfall (CLAUDE.md). */
+export function enthaeltGasgeruch(text: string): boolean {
+  const roh = normalisiere(text);
+  return GASGERUCH.some((g) => roh.includes(normalisiere(g)));
+}
+
 export type Zuordnung =
   | { text: string; gasgeruch: boolean; art: 'eindeutig'; teil: ModellTeilId }
   | { text: string; gasgeruch: boolean; art: 'rueckfrage'; grund: 'lage' | 'mehrdeutig'; optionen: ModellTeilId[] }
@@ -103,9 +109,8 @@ function passt(wortliste: readonly string[], stichwort: string): boolean {
  * eingebauten. Gewinnt ein Teil mit den meisten Treffern, ist die Zuordnung eindeutig.
  */
 export function ordneMangelZu(text: string, zusatz: Partial<Record<ModellTeilId, readonly string[]>> = {}): Zuordnung {
-  const roh = normalisiere(text);
   const w = woerter(text);
-  const gasgeruch = GASGERUCH.some((g) => roh.includes(normalisiere(g)));
+  const gasgeruch = enthaeltGasgeruch(text);
   const punkte = new Map<ModellTeilId, number>();
   const plus = (teil: ModellTeilId, n: number) => punkte.set(teil, (punkte.get(teil) ?? 0) + n);
 

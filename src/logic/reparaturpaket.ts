@@ -6,7 +6,10 @@ import { vorgeschlagenePrioritaet } from './aufgaben';
 import { normalisiere } from './suche';
 
 export interface PaketMangel {
+  /** Vollständiger Mangeltext (z. B. der Weg durch den Symptom-Baum) */
   text: string;
+  /** Kurzer Aufgabentitel; ohne Angabe wird der Text genommen */
+  titel?: string;
   teil: ModellTeilId;
   gasgeruch: boolean;
 }
