@@ -2,7 +2,7 @@
 
 Ziel laut Brief: Die erste echte Reparatur lässt sich komplett mit der App planen, durchführen und dokumentieren. Erst danach beginnt V2.
 
-**Status: freigegeben am 2026-10-18.**
+**Status: Code fertig (Schritte 1–18, 2026-10-27). Feldtest offen – verschoben, weil der Nutzer gerade nicht beim Fahrzeug ist.**
 
 ## Umfang (aus dem Brief)
 - Fahrzeugprofil mit Motorerkennung (Angaben + Fotos, alle CJ-6-Motoren), Kraftstoff bivalent mit Gasanlage, Umbau-Tracking
@@ -55,7 +55,7 @@ Format: `docs/wissensbasis-format.md`. Die Werte kommen aus dem Werkstatthandbuc
 16. [x] **Symptom-Baum:** Ansicht für Entscheidungsbäume aus der Wissensbasis, offline, ohne KI; Gasgeruch als Abbruch. Im Reiter Diagnose. Startfragen = Knoten ohne Verweis darauf. Mit Gasanlage vor jedem Durchlauf „Riechst du Gas?“; Antworten mit Gasgeruch brechen ebenfalls ab. Schleifen und Verweise ins Leere enden mit Hinweis. Befund → Teil im Modell und Reparaturpaket (Titel = letzte Frage + Antwort, ganzer Weg als Mangeltext); Prüfschritt → Aufgabe.
 17. [x] **Einheitenumrechnung:** SAE ↔ metrisch, ft-lb ↔ Nm, getestet. `src/logic/einheiten.ts` mit exakten Definitionen (Zoll, Pfund, US-Gallone, Normfallbeschleunigung): Länge, Drehmoment, Druck, Temperatur, Volumen, Hubraum, Gewicht, Geschwindigkeit, Verbrauch. Rechner über einen Knopf in der Leiste, mit Schlüsselweiten (Zoll-Bruch → mm, nächster metrischer Schlüssel mit Abweichung). Sollwerte in Anleitungen zeigen die Umrechnung daneben; Messwerte nutzen dieselbe Druckumrechnung.
 18. [x] **Datensicherung:** Export und Import aller Daten inkl. Fotos als eine Datei; Rundreise-Test. Im Reiter Fahrzeug unten. Eine JSON-Datei mit allen Tabellen (inkl. gelöschter Einträge für den Abgleich), Fotos als Base64; Teilen (Android-Teilen-Menü) oder Herunterladen. Einspielen führt zusammen: je Eintrag gewinnt der neuere `aktualisiert_am`, Neueres auf dem Gerät bleibt. Vorschau vorher, Schreiben in einer Transaktion. Zeigt letzte Sicherung, ob der Speicher dauerhaft ist und den belegten Platz.
-19. [ ] **Feldtest:** Offline auf dem Android-Handy in der Garage, Befunde sammeln.
+19. [ ] **Feldtest:** Offline auf dem Android-Handy in der Garage, Befunde sammeln. Verschoben (2026-10-27): Nutzer ist derzeit nicht beim Fahrzeug. Laut Brief beginnt V2 erst, wenn die erste echte Reparatur komplett mit der App erledigt ist.
 
 ## Entscheidungen
 - **Hosting:** GitHub Pages wie bei HRVST (öffentliches Repo `SuperPuff027/CJ6-Repair`). Die Wissensbasis bleibt privat, weil sie nur lokal importiert wird.

@@ -4,7 +4,7 @@ Persönliche, offlinefähige Werkstatt-App (PWA) für genau einen Jeep CJ-6, Bau
 
 Projekt-Brief (Funktionsumfang, Ausbaustufen, Wartungsintervalle, Risiken): Claude-Docs-Dokument „Project Brief: CJ-6 Werkstatt-App“, https://claude.ai/code/artifact/1aa58d86-9eb8-440b-8306-5928bd25df31 (nur über den Docs-Connector lesen).
 
-**Aktuelle Stufe: MVP.** Plan und Fortschritt: `docs/plan-mvp.md` (erledigte Schritte dort abhaken).
+**Aktuelle Stufe: MVP – Code fertig, Feldtest offen (verschoben).** Plan und Fortschritt: `docs/plan-mvp.md` (erledigte Schritte dort abhaken).
 
 ## Arbeitsweise
 - Nur die aktuelle Stufe umsetzen. V2/V3 nur im Datenmodell vorbereiten, keinen Code dafür schreiben.
