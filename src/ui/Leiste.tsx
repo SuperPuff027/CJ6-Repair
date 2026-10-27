@@ -17,13 +17,20 @@ const MOND = (
   </svg>
 );
 
+const RECHNER = (
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <path d="M8 7h8M8 12h2M12 12h2M16 12v5M8 16h2M12 16h2" />
+  </svg>
+);
+
 const MENUE = (
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M4 7h16M4 12h11M4 17h16" />
   </svg>
 );
 
-export function Leiste(props: { thema: Thema; themaUmschalten: () => void; menueOffen: boolean; menueOeffnen: () => void }) {
+export function Leiste(props: { thema: Thema; themaUmschalten: () => void; menueOffen: boolean; menueOeffnen: () => void; rechnerOeffnen: () => void }) {
   const { t, sprache, setzeSprache } = useSprache();
   const { thema, themaUmschalten: umschalten } = props;
 
@@ -51,6 +58,9 @@ export function Leiste(props: { thema: Thema; themaUmschalten: () => void; menue
         </div>
       </div>
       <div class="leiste-knoepfe">
+        <button class="rund-knopf" onClick={props.rechnerOeffnen} aria-label={t('rechner.oeffnen')}>
+          {RECHNER}
+        </button>
         <button class="rund-knopf sprach-knopf" onClick={wechsleSprache} aria-label={t('leiste.sprache_wechseln')}>
           {t('leiste.sprache_kurz')}
         </button>

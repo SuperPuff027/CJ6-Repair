@@ -2,6 +2,7 @@
 // ohne Vorgabe werden Messungen gespeichert und verglichen, aber nicht als „zu hoch/zu niedrig“ bewertet.
 import type { Betriebsart, Messung, Messvorgabe } from '../model/typen';
 import type { ModellTeilId } from '../szene/modell';
+import { rechne } from './einheiten';
 
 export const MESSGROESSEN = [
   'kompression',
@@ -40,15 +41,10 @@ export function istMessgroesse(wert: unknown): wert is Messgroesse {
   return typeof wert === 'string' && (MESSGROESSEN as readonly string[]).includes(wert);
 }
 
-/** 1 psi = 6894,757 Pa = 0,06894757 bar (Definition über das Pfund-Kraft je Quadratzoll). */
-const BAR_JE_PSI = 0.06894757;
-
-/** Rechnet zwischen Einheiten derselben Messgröße um; null, wenn das nicht geht. */
+/** Rechnet zwischen Einheiten derselben Messgröße um (Druck: bar/psi); null, wenn das nicht geht. */
 export function rechneUm(wert: number, von: string, nach: string): number | null {
   if (von === nach) return wert;
-  if (von === 'psi' && nach === 'bar') return wert * BAR_JE_PSI;
-  if (von === 'bar' && nach === 'psi') return wert / BAR_JE_PSI;
-  return null;
+  return rechne(wert, 'druck', von, nach);
 }
 
 /**

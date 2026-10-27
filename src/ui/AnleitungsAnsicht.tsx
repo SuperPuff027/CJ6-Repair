@@ -6,6 +6,8 @@ import { teilSchluessel } from '../i18n';
 import { useSprache } from '../i18n/kontext';
 import { begrenzeSchritt, formatiereSollwert, quellenText, schrittFotoBezug } from '../logic/anleitung';
 import { mitStatus } from '../logic/aufgaben';
+import { gegenstueck } from '../logic/einheiten';
+import { formatiereZahl } from '../logic/format';
 import type { Anleitung, Aufgabe, Bauteil } from '../model/typen';
 import { FotoAblage } from './FotoAblage';
 
@@ -147,7 +149,13 @@ export function AnleitungsAnsicht(props: { anleitungId: string; aufgabeId: strin
                 {aktuell.sollwerte.map((s, i) => (
                   <li key={i} class="sollwert">
                     <span class="sollwert-groesse">{s.groesse}</span>
-                    <span class="sollwert-wert">{formatiereSollwert(s, sprache)}</span>
+                    <span class="sollwert-wert">
+                      {formatiereSollwert(s, sprache)}
+                      {(() => {
+                        const g = gegenstueck(s.wert, s.einheit);
+                        return g && <span class="sollwert-umgerechnet"> ≈ {`${formatiereZahl(g.wert, sprache, 1)} ${g.einheit}`}</span>;
+                      })()}
+                    </span>
                     <span class="sollwert-quelle">
                       {t('motor.quelle')}: {quellenText(s.quelle)}
                     </span>

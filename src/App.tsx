@@ -4,6 +4,7 @@ import { AnleitungsAnsicht } from './ui/AnleitungsAnsicht';
 import { Buehne } from './ui/Buehne';
 import { Flyout } from './ui/Flyout';
 import { Leiste } from './ui/Leiste';
+import { Umrechner } from './ui/Umrechner';
 import { useThema } from './ui/useThema';
 
 /** Unter dieser Breite verdeckt das Menü fast den ganzen Bildschirm; nach einer Auswahl schließt es. */
@@ -16,6 +17,7 @@ export function App() {
   const [anleitung, setzeAnleitung] = useState<{ anleitungId: string; aufgabeId: string | null } | null>(null);
   // Zählt hoch, wenn sich Aufgaben außerhalb des Menüs ändern (z. B. in der Anleitung), damit es neu lädt.
   const [aufgabenStand, setzeAufgabenStand] = useState(0);
+  const [rechnerOffen, setzeRechnerOffen] = useState(false);
 
   const waehleImMenue = (id: ModellTeilId | null) => {
     setzeAuswahl(id);
@@ -25,18 +27,18 @@ export function App() {
   // Escape schließt zuerst das Menü, dann die Auswahl (Laptop).
   useEffect(() => {
     const beiTaste = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || anleitung) return; // die Anleitung schließt sich selbst
+      if (e.key !== 'Escape' || anleitung || rechnerOffen) return; // diese schließen sich selbst
       if (menueOffen) setzeMenueOffen(false);
       else setzeAuswahl(null);
     };
     addEventListener('keydown', beiTaste);
     return () => removeEventListener('keydown', beiTaste);
-  }, [menueOffen, anleitung]);
+  }, [menueOffen, anleitung, rechnerOffen]);
 
   return (
     <>
       <Buehne thema={thema} auswahl={auswahl} waehle={setzeAuswahl} menueOffen={menueOffen} />
-      <Leiste thema={thema} themaUmschalten={umschalten} menueOffen={menueOffen} menueOeffnen={() => setzeMenueOffen(true)} />
+      <Leiste thema={thema} themaUmschalten={umschalten} menueOffen={menueOffen} menueOeffnen={() => setzeMenueOffen(true)} rechnerOeffnen={() => setzeRechnerOffen(true)} />
       <Flyout
         offen={menueOffen}
         schliessen={() => setzeMenueOffen(false)}
@@ -45,6 +47,7 @@ export function App() {
         oeffneAnleitung={(anleitungId, aufgabeId) => setzeAnleitung({ anleitungId, aufgabeId })}
         aufgabenStand={aufgabenStand}
       />
+      {rechnerOffen && <Umrechner schliessen={() => setzeRechnerOffen(false)} />}
       {anleitung && (
         <AnleitungsAnsicht
           {...anleitung}

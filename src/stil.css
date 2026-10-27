@@ -1356,3 +1356,96 @@ select.eingabe {
   font-size: 15px;
   font-weight: 600;
 }
+
+/* Rechner */
+.rechner section {
+  margin-bottom: 26px;
+}
+.kategorien {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.chip-knopf {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--kante);
+  border-radius: 999px;
+  font-size: 14px;
+}
+.chip-knopf.gewaehlt {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+  font-weight: 600;
+}
+.rechner-zeile {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 8px;
+}
+.rechner-tausch {
+  margin-bottom: 12px;
+}
+.rechner-eingabe {
+  font-size: 20px;
+  font-family: var(--schrift-mono);
+}
+@media (max-width: 480px) {
+  .rechner-zeile {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rechner-zeile .feld:first-child {
+    grid-column: 1 / -1;
+  }
+  .rechner-tausch {
+    display: none;
+  }
+}
+.rechner-ergebnis {
+  margin: 8px 0 12px;
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.rechner-ergebnis p {
+  margin: 0 0 4px;
+}
+.rechner-ergebnis strong {
+  font-size: 26px;
+  font-family: var(--schrift-mono);
+}
+.schluessel-tabelle {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.schluessel-tabelle caption {
+  text-align: left;
+  font-size: 12.5px;
+  color: var(--gedaempft);
+  padding-bottom: 6px;
+}
+.schluessel-tabelle th,
+.schluessel-tabelle td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--kante);
+  text-align: left;
+}
+.schluessel-tabelle th {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gedaempft);
+}
+.schluessel-tabelle tbody tr {
+  cursor: pointer;
+}
+.schluessel-tabelle tbody tr:hover {
+  background: var(--chip);
+}
+.sollwert-umgerechnet {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--gedaempft);
+}

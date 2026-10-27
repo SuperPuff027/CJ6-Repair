@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { de } from './de';
 import { en } from './en';
+import { KATEGORIE_LISTE } from '../logic/einheiten';
 import { MESSGROESSEN } from '../logic/messwerte';
 import { GRUND_CODES } from '../logic/motorerkennung';
 import { FEHLER_CODES, WISSENSBASIS_TABELLEN } from '../logic/wissensbasis';
@@ -63,5 +64,11 @@ describe('Texte zur Motorerkennung', () => {
 describe('Texte zu Messwerten', () => {
   it('gibt es für jede Messgröße', () => {
     for (const g of MESSGROESSEN) expect(de, g).toHaveProperty([`messgroesse.${g}`]);
+  });
+});
+
+describe('Texte zum Rechner', () => {
+  it('gibt es für jede Kategorie', () => {
+    for (const k of KATEGORIE_LISTE) expect(de, k).toHaveProperty([`kategorie.${k}`]);
   });
 });
