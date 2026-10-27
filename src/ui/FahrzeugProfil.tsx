@@ -8,6 +8,7 @@ import { GAS_TEXTFELDER, jahrFeld, leereGasanlage, textFeld, vinFeld } from '../
 import { formatiereDatum } from '../logic/format';
 import type { Fahrzeug, Gasanlage, Kraftstoff, Umbau } from '../model/typen';
 import { MODELL_TEIL_IDS, type ModellTeilId } from '../szene/modell';
+import { Datensicherung } from './Datensicherung';
 import { MotorErkennung } from './MotorErkennung';
 
 const MELDUNG_DAUER_MS = 2500;
@@ -171,6 +172,7 @@ export function FahrzeugProfil() {
       )}
 
       <Umbauten umbauten={umbauten} neuLaden={() => ladeUmbauten().then(setzeUmbauten)} melde={melde} />
+      <Datensicherung />
     </div>
   );
 }

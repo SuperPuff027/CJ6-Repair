@@ -1449,3 +1449,16 @@ select.eingabe {
   font-weight: 400;
   color: var(--gedaempft);
 }
+
+/* Datensicherung */
+.sicherung .feld-hinweis {
+  margin: 0 0 6px;
+}
+.sicherung > .voll-knopf {
+  margin-top: 6px;
+}
+.link-knopf {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}

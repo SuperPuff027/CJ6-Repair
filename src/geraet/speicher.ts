@@ -4,6 +4,8 @@
 export const SCHLUESSEL = {
   sprache: 'cj6.sprache',
   thema: 'cj6.thema',
+  /** ISO-Zeitpunkt der letzten Sicherung auf diesem Gerät */
+  letzteSicherung: 'cj6.letzteSicherung',
 } as const;
 
 type Schluessel = (typeof SCHLUESSEL)[keyof typeof SCHLUESSEL];

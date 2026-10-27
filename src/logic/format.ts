@@ -22,3 +22,10 @@ export function lokalesDatum(zeitpunkt: string): string {
   const zwei = (n: number) => String(n).padStart(2, '0');
   return `${d.getFullYear()}-${zwei(d.getMonth() + 1)}-${zwei(d.getDate())}`;
 }
+
+/** Dateigröße als „850 KB“ oder „12,4 MB“. */
+export function formatiereGroesse(bytes: number, sprache: Sprache): string {
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${formatiereZahl(Math.max(1, Math.round(kb)), sprache, 0)} KB`;
+  return `${formatiereZahl(kb / 1024, sprache, 1)} MB`;
+}
